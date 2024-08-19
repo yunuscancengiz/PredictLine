@@ -1,10 +1,15 @@
 from confluent_kafka import Producer, Consumer, KafkaException
 from mongodb import MongoDB
+from dotenv import load_dotenv
+import os
 
 class ApprovedConsumer():
-    db_username = 'catchthebalina'
+    db_username = os.getenv('DB_USERNAME')
+    db_password = os.getenv('DB_PASSWORD')
+    db_cluster = os.getenv('DB_CLUSTER')
+    """db_username = 'catchthebalina'
     db_password = 'whaleBot_1104'
-    db_cluster = 'Whales'
+    db_cluster = 'Whales'"""
     db_client = MongoDB(username=db_username, password=db_password, cluster_name=db_cluster)
 
     def __init__(self, topic:str, properties_file:str, approving_properties_file:str, approving_topic:str) -> None:
