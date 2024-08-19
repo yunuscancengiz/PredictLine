@@ -29,7 +29,7 @@ class ApprovedConsumer():
         while True:
             try:
                 if self.is_wrote == False:
-                    self. 
+                    self.consume_messages()
                     self.is_wrote == True
                 else:
                     self.produce_approving_message()
