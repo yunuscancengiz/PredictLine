@@ -88,6 +88,14 @@ class ApprovedConsumer():
                 break
 
 
+    @staticmethod
+    def delivery_report(err, msg):
+        if err is not None:
+            print(f'Delivery failed for {msg.key()}, error: {err}')
+            return
+        print(f'Record:{msg.key()} successfully produced to topic:{msg.topic()} partition:[{msg.partition()}] at offset:{msg.offset()}')
+
+
     def produce_approving_message(self):
         while True:
             try:
