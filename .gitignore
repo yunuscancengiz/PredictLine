@@ -2,7 +2,7 @@
 *.env
 *.csv
 *.xlsx
-
+*.properties
 
 
 # Byte-compiled / optimized / DLL files
