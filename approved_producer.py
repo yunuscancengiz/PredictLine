@@ -89,7 +89,7 @@ class ApprovedProducer:
             except Exception as e:
                 print(f'Exception happened when consuming messages, error: {e}')
             except KeyboardInterrupt:
-                break
+                raise
 
 
     def produce_messages(self):
@@ -104,9 +104,9 @@ class ApprovedProducer:
             except Exception as e:
                 print(f'Exception while producing message - index: {index}, Err: {e}')
             except KeyboardInterrupt:
-                break
+                raise
         self.producer.flush()
-        time.sleep(10)
+        time.sleep(3)
         #self.is_approved = False
 
 

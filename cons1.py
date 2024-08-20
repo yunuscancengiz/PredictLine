@@ -34,7 +34,6 @@ class ApprovedConsumer():
                 else:
                     self.produce_approving_message()
             except KeyboardInterrupt:
-                print('main func worked')
                 break
             except Exception as e:
                 print(e)
@@ -84,9 +83,7 @@ class ApprovedConsumer():
                 self.is_wrote = True
                 return msg
             except KeyboardInterrupt:
-                print('consume message worked')
                 raise
-                break
             except Exception as e:
                 print(f'Exception happened when consuming messages, error: {e}')     
 
@@ -107,9 +104,7 @@ class ApprovedConsumer():
                     self.is_wrote = False
                     return
             except KeyboardInterrupt:
-                print('produce approving message worked')
                 raise
-                break
             except BufferError:
                 self.producer.poll(0.1)
             except Exception as e:
