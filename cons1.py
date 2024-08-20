@@ -33,11 +33,11 @@ class ApprovedConsumer():
                     self.is_wrote == True
                 else:
                     self.produce_approving_message()
-            except Exception as e:
-                print(e)
             except KeyboardInterrupt:
                 print('main func worked')
                 break
+            except Exception as e:
+                print(e)
 
 
     def read_config(self):
@@ -83,11 +83,11 @@ class ApprovedConsumer():
                 self.db_client.write_data(data=msg)
                 self.is_wrote = True
                 return msg
-            except Exception as e:
-                print(f'Exception happened when consuming messages, error: {e}')
             except KeyboardInterrupt:
                 print('consume message worked')
                 break
+            except Exception as e:
+                print(f'Exception happened when consuming messages, error: {e}')     
 
 
     @staticmethod
@@ -105,13 +105,13 @@ class ApprovedConsumer():
                     self.producer.produce(key='True', value='True', topic=self.approving_topic, on_delivery=self.delivery_report)
                     self.is_wrote = False
                     return
-            except BufferError:
-                self.producer.poll(0.1)
-            except Exception as e:
-                print(f'Exception happened when producing approve message, error: {e}')
             except KeyboardInterrupt:
                 print('produce approving message worked')
                 break
+            except BufferError:
+                self.producer.poll(0.1)
+            except Exception as e:
+                print(f'Exception happened when producing approve message, error: {e}')         
 
 
 if __name__ == '__main__':
