@@ -26,17 +26,12 @@ class ApprovedProducer:
         while True:
             try:
                 if self.is_approved:
-                    print(self.is_approved)
                     self.messages = FetchData(symbol=self.symbol).fetch()
                     self.produce_messages()
-                    print('produce messages çalıştı')
                     self.messages = []  # @TODO: karşıdan onay gelince sıfırlayacak hale getir
-                    print('mesaj listesi boşaltıldı')
                     self.is_approved = False
-                    print(self.is_approved)
                 else:
                     self.consume_messages()
-                    print('consume messages çalıştı')
             except Exception as e:
                 print(e)
             except KeyboardInterrupt:

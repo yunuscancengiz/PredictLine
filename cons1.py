@@ -29,14 +29,10 @@ class ApprovedConsumer():
         while True:
             try:
                 if self.is_wrote == False:
-                    print(self.is_wrote)
                     self.consume_messages()
-                    print('consume messages çalıştı')
                     self.is_wrote == True
-                    print(self.is_wrote)
                 else:
                     self.produce_approving_message()
-                    print('produce messages çalıştı')
             except Exception as e:
                 print(e)
             except KeyboardInterrupt:
