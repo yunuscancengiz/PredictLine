@@ -25,6 +25,22 @@ class ApprovedProducer:
     def main(self):
         while True:
             try:
+                self.messages = FetchData(symbol=self.symbol).fetch()
+                for index in range(len(self.messages)):
+                    if self.is_approved:
+                        msg_key, msg_value = self.parse_messages(index=index)
+                        self.produce_message(message_key=msg_key, message_value=msg_value)
+                    else:
+                        self.consume_messages()
+                self.messages = []
+            except Exception as e:
+                print(e)
+            except KeyboardInterrupt:
+                break
+
+    def main_ex(self):
+        while True:
+            try:
                 if self.is_approved:
                     self.messages = FetchData(symbol=self.symbol).fetch()
                     self.produce_messages()
@@ -90,6 +106,21 @@ class ApprovedProducer:
                 print(f'Exception happened when consuming messages, error: {e}')
             except KeyboardInterrupt:
                 raise
+
+
+    def produce_message(self, message_key:str, message_value:str):
+        try:
+            if self.is_approved:
+                self.producer.produce(key=message_key, value=message_value, topic=self.topic, on_delivery=self.delivery_report)
+                self.is_approved = False
+                self.producer.flush()
+                time.sleep(1)
+        except BufferError:
+            self.producer.poll(0.1)
+        except Exception as e:
+            print(f'Exception while producing a message, Err: {e}')
+        except KeyboardInterrupt:
+            raise
 
 
     def produce_messages(self):
