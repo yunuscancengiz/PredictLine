@@ -25,14 +25,11 @@ class ApprovedProducer:
     def main(self):
         while True:
             try:
-                #self.messages = FetchData(symbol=self.symbol).fetch()
-                self.messages = ['test', 'deneme', 'ehe', 'ehehehe']
+                self.messages = FetchData(symbol=self.symbol).fetch()
                 for index in range(len(self.messages)):
                     if self.is_approved:
-                        #msg_key, msg_value = self.parse_messages(index=index)
-                        #self.produce_message(message_key=msg_key, message_value=msg_value)
-                        self.produce_message(message_key=str(index), message_value=self.messages[index])
-                    #else:
+                        msg_key, msg_value = self.parse_messages(index=index)
+                        self.produce_message(message_key=msg_key, message_value=msg_value)
                         self.consume_messages()
                 self.messages = []
             except Exception as e:
