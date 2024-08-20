@@ -30,7 +30,7 @@ class ApprovedProducer:
                     if self.is_approved:
                         msg_key, msg_value = self.parse_messages(index=index)
                         self.produce_message(message_key=msg_key, message_value=msg_value)
-                    else:
+                    #else:
                         self.consume_messages()
                 self.messages = []
             except Exception as e:
