@@ -113,7 +113,7 @@ class ApprovedProducer:
                 self.producer.produce(key=message_key, value=message_value, topic=self.topic, on_delivery=self.delivery_report)
                 self.is_approved = False
                 self.producer.flush()
-                time.sleep(1)
+                #time.sleep(1)
         except BufferError:
             self.producer.poll(0.1)
         except Exception as e:
