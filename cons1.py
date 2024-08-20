@@ -36,6 +36,7 @@ class ApprovedConsumer():
             except Exception as e:
                 print(e)
             except KeyboardInterrupt:
+                print('main func worked')
                 break
 
 
@@ -85,6 +86,7 @@ class ApprovedConsumer():
             except Exception as e:
                 print(f'Exception happened when consuming messages, error: {e}')
             except KeyboardInterrupt:
+                print('consume message worked')
                 break
 
 
@@ -108,6 +110,7 @@ class ApprovedConsumer():
             except Exception as e:
                 print(f'Exception happened when producing approve message, error: {e}')
             except KeyboardInterrupt:
+                print('produce approving message worked')
                 break
 
 
