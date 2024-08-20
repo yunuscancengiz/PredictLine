@@ -21,7 +21,7 @@ class SimpleProducer:
     def main(self):
         #while True:
         try:
-            self.messages = ['test', 'deneme', 'ehe', 'ehehehe']
+            self.messages = FetchData(symbol=self.symbol).fetch()
             self.produce_messages()
         except Exception as e:
             print(e)
