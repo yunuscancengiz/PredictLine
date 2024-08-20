@@ -102,7 +102,8 @@ class ApprovedProducer:
             try:
                 if self.is_approved == True:
                     message_key, message_value = self.parse_messages(index=index)
-                    self.producer.produce(key=message_key, value=message_value, topic=self.topic, on_delivery=self.delivery_report)    
+                    self.producer.produce(key=message_key, value=message_value, topic=self.topic, on_delivery=self.delivery_report)
+                    self.is_approved = False    # her mesajda onay mesajı bekler 
             except BufferError:
                 self.producer.poll(0.1)
             except Exception as e:
@@ -111,7 +112,7 @@ class ApprovedProducer:
                 break
         self.producer.flush()
         time.sleep(10)
-        self.is_approved = False
+        #self.is_approved = False
 
 
 if __name__ == '__main__':
