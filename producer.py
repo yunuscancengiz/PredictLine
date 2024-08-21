@@ -19,29 +19,6 @@ class SimpleProducer:
         self.producer  = Producer(self.producer_config)
 
 
-    def json_test(self):
-        data_list = [
-            {
-                'deneme':'jfsgsh',
-                'test':'321'
-            },
-            {
-                'deneme':'ahahshd',
-                'test':'45321'
-            }
-        ]
-
-        for data in data_list:
-
-            serialized_data = json.dumps(data).encode(encoding='utf-8')
-            print(type(serialized_data))
-            print(serialized_data)
-
-            deserialized_data = json.loads(serialized_data)
-            print(type(deserialized_data))
-            print(deserialized_data)
-
-
     def main(self):
         #while True:
         try:
@@ -103,6 +80,4 @@ if __name__ == '__main__':
         properties_file='client.properties'
     )
 
-    simple_producer.json_test()
-
-    #simple_producer.main()
+    simple_producer.main()
