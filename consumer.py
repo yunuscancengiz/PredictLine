@@ -1,6 +1,6 @@
 from confluent_kafka import Consumer, KafkaException
 import json
-
+import traceback
 
 class SimpleConsumer:
     def __init__(self, topic:str, properties_file:str) -> None:
@@ -19,7 +19,7 @@ class SimpleConsumer:
         try:
             self.consume_messages()
         except Exception as e:
-            print(e)
+            print(f'Exception: {e}\n\n{str(traceback.format_exc())}')
 
 
     def deserialize_data(self, data):
@@ -55,7 +55,7 @@ class SimpleConsumer:
             except KeyboardInterrupt:
                 raise
             except Exception as e:
-                print(f'Exception happened when consuming messages, error: {e}')
+                print(f'Exception happened when consuming messages, error: {e}\n\n{str(traceback.format_exc())}')
 
 
 if __name__ == '__main__':

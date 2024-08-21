@@ -2,6 +2,7 @@ from confluent_kafka import Producer, KafkaException
 from fetch_finance_data import FetchData
 import time
 import json
+import traceback
 
 
 class SimpleProducer:
@@ -25,7 +26,7 @@ class SimpleProducer:
             self.messages = FetchData(symbol=self.symbol).fetch()
             self.produce_messages()
         except Exception as e:
-            print(e)
+            print(f'Exception: {e}\n\n{str(traceback.format_exc())}')
         except KeyboardInterrupt:
             raise
 
@@ -66,7 +67,7 @@ class SimpleProducer:
             except BufferError:
                 self.producer.poll(0.1)
             except Exception as e:
-                print(f'Exception while producing message - index: {index}, Err: {e}')
+                print(f'Exception while producing message - index: {index}, Err: {e}\n\n{str(traceback.format_exc())}')
             except KeyboardInterrupt:
                 raise
         self.producer.flush()
