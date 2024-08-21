@@ -50,8 +50,6 @@ class SimpleConsumer:
                     else:
                         print(f'Error: {msg.error()}')
                         break
-                print(msg.value())
-                print(type(msg.value()))
                 msg = self.deserialize_data(data=msg.value())
                 print(msg)
             except KeyboardInterrupt:
