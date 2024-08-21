@@ -52,7 +52,6 @@ class SimpleConsumer:
                         break
                 msg = self.deserialize_data(data=msg.value())
                 print(msg)
-                print(type(msg))
             except KeyboardInterrupt:
                 raise
             except Exception as e:
