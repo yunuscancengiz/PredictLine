@@ -49,7 +49,7 @@ class SimpleProducer:
 
     def serialize_data(self, index:int):
         key = str(int(time.time()))
-        value = json.dumps(self.messages[index])
+        value = json.dumps(self.messages[index]).encode(encoding='utf-8')
         return key, value
 
 
