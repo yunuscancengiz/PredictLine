@@ -67,7 +67,7 @@ class SimpleProducer:
     def produce_messages(self):
         for index in range(len(self.messages)):
             try:
-                msg_key, msg_value = self.parse_messages(index=index)
+                msg_key, msg_value = self.serialize_data(index=index)
                 self.producer.produce(key=msg_key, value=msg_value, topic=self.topic, on_delivery=self.delivery_report)
             except BufferError:
                 self.producer.poll(0.1)
