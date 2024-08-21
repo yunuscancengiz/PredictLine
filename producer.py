@@ -20,6 +20,12 @@ class SimpleProducer:
         self.producer  = Producer(self.producer_config)
 
 
+    def test_fetch_data(self):
+        data = FetchData(symbol=self.symbol).fetch()
+        print(data)
+        print(type(data))
+
+
     def main(self):
         #while True:
         try:
@@ -48,8 +54,15 @@ class SimpleProducer:
 
 
     def serialize_data(self, index:int):
+        data = {
+            'date': str(self.messages.loc[index, 'Date']),
+            'open': str(self.messages.loc[index, 'Open']),
+            'high': str(self.messages.loc[index, 'High']),
+            'low': str(self.messages.loc[index, 'Low']),
+            'close': str(self.messages.loc[index, 'Close'])
+        }
         key = str(int(time.time()))
-        value = json.dumps(self.messages[index]).encode(encoding='utf-8')
+        value = json.dumps(data).encode(encoding='utf-8')
         return key, value
 
 
@@ -81,4 +94,6 @@ if __name__ == '__main__':
         properties_file='client.properties'
     )
 
-    simple_producer.main()
+    #simple_producer.main()
+
+    simple_producer.test_fetch_data()
