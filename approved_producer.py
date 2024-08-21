@@ -43,7 +43,7 @@ class ApprovedProducer:
                 if self.is_approved:
                     self.messages = FetchData(symbol=self.symbol).fetch()
                     self.produce_messages()
-                    self.messages = []  # @TODO: karşıdan onay gelince sıfırlayacak hale getir
+                    self.messages = []
                     self.is_approved = False
                 else:
                     self.consume_messages()

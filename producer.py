@@ -1,6 +1,7 @@
 from confluent_kafka import Producer, KafkaException
 from fetch_finance_data import FetchData
 import time
+import json
 
 
 class SimpleProducer:
@@ -16,6 +17,29 @@ class SimpleProducer:
 
         # create producer object using config dict
         self.producer  = Producer(self.producer_config)
+
+
+    def json_test(self):
+        data_list = [
+            {
+                'deneme':'jfsgsh',
+                'test':'321'
+            },
+            {
+                'deneme':'ahahshd',
+                'test':'45321'
+            }
+        ]
+
+        for data in data_list:
+
+            serialized_data = json.dumps(data).encode(encoding='utf-8')
+            print(type(serialized_data))
+            print(serialized_data)
+
+            deserialized_data = json.loads(serialized_data)
+            print(type(deserialized_data))
+            print(deserialized_data)
 
 
     def main(self):
@@ -43,6 +67,12 @@ class SimpleProducer:
             print(f'Delivery failed for {msg.key()}, error: {err}')
             return
         print(f'Record:{msg.key()} successfully produced to topic:{msg.topic()} partition:[{msg.partition()}] at offset:{msg.offset()}')
+
+
+    def serialize_data(self, index:int):
+        key = str(int(time.time()))
+        value = json.dumps(self.messages[index]).encode(encoding='utf-8')
+        return key, value
 
 
     def parse_messages(self, index:int):
@@ -73,4 +103,6 @@ if __name__ == '__main__':
         properties_file='client.properties'
     )
 
-    simple_producer.main()
+    simple_producer.json_test()
+
+    #simple_producer.main()

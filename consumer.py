@@ -1,13 +1,8 @@
 from confluent_kafka import Consumer, KafkaException
-from mongodb import MongoDB
+import json
 
 
 class SimpleConsumer:
-    db_username = 'catchthebalina'
-    db_password = 'whaleBot_1104'
-    db_cluster = 'Whales'
-    db_client = MongoDB(username=db_username, password=db_password, cluster_name=db_cluster)
-
     def __init__(self, topic:str, properties_file:str) -> None:
         self.topic = topic
         self.properties_file = properties_file
@@ -25,6 +20,10 @@ class SimpleConsumer:
             self.consume_messages()
         except Exception as e:
             print(e)
+
+
+    def deserialize_data(self, data):
+        return json.loads(data)
 
 
     def read_config(self):
@@ -51,16 +50,8 @@ class SimpleConsumer:
                     else:
                         print(f'Error: {msg.error()}')
                         break
-                msg = f'key: {msg.key()} - value: {msg.value()}'
+                msg = self.deserialize_data(data=msg.value())
                 print(msg)
-                msg = {
-                    'date': msg.split(', ')[0],
-                    'open': msg.split(', ')[1], 
-                    'high': msg.split(', ')[2],
-                    'low': msg.split(', ')[3]
-                    #'close': msg.split(', ')[4]
-                }
-                self.db_client.write_data(data=msg)
             except KeyboardInterrupt:
                 raise
             except Exception as e:
