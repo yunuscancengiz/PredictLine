@@ -19,15 +19,7 @@ class SimpleProducer:
         # create producer object using config dict
         self.producer  = Producer(self.producer_config)
 
-
-    def test_fetch_data(self):
-        data = FetchData(symbol=self.symbol).fetch()
-        print(data)
-        print(type(data))
-
-
     def main(self):
-        #while True:
         try:
             self.messages = FetchData(symbol=self.symbol).fetch()
             self.produce_messages()
@@ -94,6 +86,4 @@ if __name__ == '__main__':
         properties_file='client.properties'
     )
 
-    #simple_producer.main()
-
-    simple_producer.test_fetch_data()
+    simple_producer.main()
