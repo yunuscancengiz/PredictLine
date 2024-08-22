@@ -3,15 +3,17 @@ from fetch_finance_data import FetchData
 import time
 import json
 import traceback
+import pandas as pd
 
 
 class SimpleProducer:
-    def __init__(self, topic:str, symbol:str, properties_file:str) -> None:
+    def __init__(self, topic:str, symbol:str, properties_file:str, data_filename:str) -> None:
         self.topic = topic
         self.symbol = symbol
         self.properties_file = properties_file
+        self.data_filename = data_filename
         self.producer_config = {}
-        self.messages = []
+        self.messages = pd.DataFrame(self.data_filename)
 
         # prepare config file
         self.read_config()
@@ -47,20 +49,18 @@ class SimpleProducer:
 
     def serialize_data(self, index:int):
         data = {
-            'date': str(self.messages.loc[index, 'Date']),
-            'open': str(self.messages.loc[index, 'Open']),
-            'high': str(self.messages.loc[index, 'High']),
-            'low': str(self.messages.loc[index, 'Low']),
-            'close': str(self.messages.loc[index, 'Close'])
+            'ts': str(self.messages.loc[index, 'ts']),
+            'device': str(self.messages.loc[index, 'device']),
+            'co': str(self.messages.loc[index, 'co']),
+            'humidity': str(self.messages.loc[index, 'humidity']),
+            'light': str(self.messages.loc[index, 'light']),
+            'lpg': str(self.messages.loc[index, 'lpg']),
+            'motion': str(self.messages.loc[index, 'motion']),
+            'smoke': str(self.messages.loc[index, 'smoke']),
+            'temp': str(self.messages.loc[index, 'temp'])
         }
         key = str(int(time.time()))
         value = json.dumps(data).encode(encoding='utf-8')
-        return key, value
-
-
-    def parse_messages(self, index:int):
-        key = str(self.messages.loc[index, 'Date'])
-        value = f"{str(self.messages.loc[index, 'Open'])}, {str(self.messages.loc[index, 'High'])}, {str(self.messages.loc[index, 'Low'])}, {str(self.messages.loc[index, 'Close'])}"
         return key, value
     
 
@@ -83,7 +83,8 @@ if __name__ == '__main__':
     simple_producer = SimpleProducer(
         topic='test-topic-2',
         symbol='AAPL',
-        properties_file='client.properties'
+        properties_file='client.properties',
+        data_filename='mini_data.csv'
     )
 
     simple_producer.main()
