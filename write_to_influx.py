@@ -1,63 +1,111 @@
-from influxdb_client import InfluxDBClient, Point, WritePrecision
-from influxdb_client .client.write_api import SYNCHRONOUS
+from influxdb import InfluxDBClient
+import traceback
+import logging
+import pandas as pd
 
 
-class RawDataWriter:
-    def __init__(self) -> None:
-        self.url = 'http://localhost:8086'
-        self.token = '222QEIh4v8r79e3ch2l6KxtHLLm1Uu4jFixG8oEKeiOE0QJdGI9KnfXbbH5kCXKz1yUsEP4MBUxHo7GYjPPQjQ=='
-        self.org = 'ce891e42a1dc8e41'
-        self.bucket = 'test_bucket'
+class InfluxDBWriter:
+    data = [
+        {
+            'test': 'sfjkslfjs', 
+            'deneme': '123',
+        }, 
+        {
+            'test': 'uuıfhsnfs',
+            'deneme': '39473'
+        }
+    ]
 
-        # create db client
-        self.client = InfluxDBClient(url=self.url, token=self.token, org=self.org)
+    def __init__(self, host:str, port:int, dbname:str, is_exist=bool, username:str=None, password:str=None) -> None:
+        self.host = host
+        self.port = port
+        self.dbname = dbname
+        self.is_exist = is_exist
+        self.username = username
+        self.password = password
 
-        # run app
-        self.main()
+        # create logger object
+        self.logger = logging.Logger(name='InfluxDBWriter')
+
+        # connection
+        self.client = self.connect()
 
 
     def main(self):
-        self.create_bucket()
-        self.write_into_bucket()
-        self.query_data()
-        self.close_connection()
+        self.create_and_switch_database()
+        self.write_data(data=self.data)
+        self.delete_database(force=False)
 
 
-    def create_bucket(self):
-        buckets_api = self.client.buckets_api()
-        buckets_api.create_bucket(bucket=self.bucket, org_id=self.org)
+    def connect(self):
+        try:
+            if self.username != None and self.password != None:
+                self.logger.info(msg='Database client created!')
+                return InfluxDBClient(host=self.host, port=self.port, username=self.username, password=self.password)
+            else:
+                self.logger.info(msg='Database client created!')
+                return InfluxDBClient(host=self.host, port=self.port)
+        except Exception as e:
+            self.logger.error(msg=f'Exception happened when creating database client! Error message: {e}')
+            self.logger.error(msg=traceback.format_exc())
 
 
-    def write_into_bucket(self):
-        write_api = self.client.write_api(write_options=SYNCHRONOUS)
-        data = [
-            Point('temperature').tag('location', 'office').field('value', 23.5).time('2024-07-01T00:00:00Z', WritePrecision.NS),
-            Point('temperature').tag('location', 'lab').field('value', 38.5).time('2024-07-01T00:00:00Z', WritePrecision.NS),
-        ]
-
-        write_api.write(bucket=self.bucket, org=self.org, record=data)
-
-
-    def query_data(self):
-        query_api = self.client.query_api()
-        query = f'from(bucket: "{self.bucket}") |> range(start: -10y) |> filter(fn: (r) => r._measurement == "temperature" and r.location == "office")'
-        results = query_api.query(org=self.org, query=query)
-
-        for table in results:
-            for record in table.records:
-                print(record.values)
-
-
-    def delete_data(self):
-        start = '2023-01-01T00:00:00Z'
-        stop = '2023-01-01T02:00:00Z'
-        delete_api = self.client.delete_api()
-        delete_api.delete(start=start, stop=stop, predicate='_measurement="temperature" AND location="lab"', bucket=self.bucket, org=self.org)
+    def create_and_switch_database(self):
+        if self.is_exist == True:
+            try:
+                self.client.switch_database(database=self.dbname)
+                self.logger.info(msg=f'Database switched into {self.dbname} successfuly!')
+            except Exception as e:
+                self.logger.error(msg=f'Exception happened when switching into {self.dbname} named database! Error message: {e}')
+                self.logger.error(traceback.format_exc())
+        else:
+            try:
+                self.client.create_database(dbname=self.dbname)
+                self.logger.info(msg=f'{self.dbname} named database created successfuly!')
+            except Exception as e:
+                self.logger.error(f'Exception happened when creating {self.dbname} named database! Error message: {e}')
+                self.logger.error(traceback.format_exc())
+            try:
+                self.client.switch_database(database=self.dbname)
+                self.logger.info(msg=f'Database switched into {self.dbname} successfuly!')
+            except Exception as e:
+                self.logger.error(f'Exception happened when switching into {self.dbname} named database! Error message: {e}')
+                self.logger.error(traceback.format_exc())
 
 
-    def close_connection(self):
-        self.client.close()
+    def write_data(self, data):
+        self.client.write_points(points=data)
 
+
+    def delete_database(self, force:bool):
+        try:
+            if force == False:
+                self.logger.warning(msg=f'{self.dbname} named database is going to be deleted! Do you want to continue? (y/n)')
+                choice = input('')
+                if choice.lower == 'n':
+                    self.logger.info(msg=f'Drop {self.dbname} database process canceled!')
+                    return
+            self.client.drop_database(dbname=self.dbname)
+            self.logger.info(msg=f'{self.dbname} named database dropped successfuly!')
+        except Exception as e:
+            self.logger.error(msg=f'Exception happened when dropping the {self.dbname} named database! Error message: {e}')
+            self.logger.error(traceback.format_exc())
+
+    def fetch_data(self, query:str) -> pd.DataFrame:
+        # @TODO: examine the type of the data that query() func returns
+        # @TODO: return the data into pandas DataFrame format
+        returned_data = self.client.query(query=query)
+        print(returned_data)
+        print(type(returned_data))
+        
+        #return self.client.query(query=query)
 
 if __name__ == '__main__':
-    RawDataWriter()
+    db_client = InfluxDBWriter(
+        host='34.45.38.113',
+        port=8086,
+        dbname='test_db',
+        is_exist=False
+    )
+
+    db_client.main()
