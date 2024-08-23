@@ -35,7 +35,7 @@ class InfluxDBWriter:
         self.password = password
 
         # create logger object
-        self.logger = logging.Logger(name='InfluxDBWriter')
+        self.logger = logging.getLogger(name='InfluxDBWriter')
         self.logger.setLevel(logging.INFO)
 
         # connection
@@ -114,8 +114,8 @@ class InfluxDBWriter:
         # @TODO: examine the type of the data that query() func returns
         # @TODO: return the data into pandas DataFrame format
         returned_data = self.client.query(query=query)
-        print(returned_data)
-        print(type(returned_data))
+        #print(returned_data)
+        #print(type(returned_data))
         
         #return self.client.query(query=query)
 
