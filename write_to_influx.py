@@ -36,7 +36,7 @@ class InfluxDBWriter:
 
         # create logger object
         self.logger = logging.getLogger(name='InfluxDBWriter')
-        
+
         # connection
         self.client = self.connect()
 
@@ -50,16 +50,16 @@ class InfluxDBWriter:
 
 
     def connect(self):
-        #try:
-        if self.username != None and self.password != None:
-            self.logger.info(msg='Database client created!')
-            return InfluxDBClient(host=self.host, port=self.port, username=self.username, password=self.password)
-        else:
-            self.logger.info(msg='Database client created!')
-            return InfluxDBClient(host=self.host, port=self.port)
-        """except Exception as e:
+        try:
+            if self.username != None and self.password != None:
+                self.logger.info(msg='Database client created!')
+                return InfluxDBClient(host=self.host, port=self.port, username=self.username, password=self.password)
+            else:
+                self.logger.info(msg='Database client created!')
+                return InfluxDBClient(host=self.host, port=self.port)
+        except Exception as e:
             self.logger.error(msg=f'Exception happened when creating database client! Error message: {e}')
-            self.logger.error(msg=traceback.format_exc())"""
+            self.logger.error(msg=traceback.format_exc())
         
 
     def disconnect(self):
@@ -68,63 +68,53 @@ class InfluxDBWriter:
 
 
     def create_and_switch_database(self):
-        print('create_and_switch database fonksiyonu çalıştı')
         if self.is_exist == True:
-            print('create_and_switch True koşulu sağlandı')
-            #try:
-            self.client.switch_database(database=self.dbname)
-            self.logger.info(msg=f'Database switched into {self.dbname} successfuly!')
-            """except Exception as e:
+            try:
+                self.client.switch_database(database=self.dbname)
+                self.logger.info(msg=f'Database switched into {self.dbname} successfuly!')
+            except Exception as e:
                 self.logger.error(msg=f'Exception happened when switching into {self.dbname} named database! Error message: {e}')
-                self.logger.error(traceback.format_exc())"""
-            print('create_and_switch True bitti')
+                self.logger.error(traceback.format_exc())
         else:
-            print('create_and_switch False koşulu sağlandı')
-            #try:
-            self.client.create_database(dbname=self.dbname)
-            self.logger.info(msg=f'{self.dbname} named database created successfuly!')
-            """except Exception as e:
+            try:
+                self.client.create_database(dbname=self.dbname)
+                self.logger.info(msg=f'{self.dbname} named database created successfuly!')
+            except Exception as e:
                 self.logger.error(f'Exception happened when creating {self.dbname} named database! Error message: {e}')
-                self.logger.error(traceback.format_exc())"""
-            #try:
-            self.client.switch_database(database=self.dbname)
-            self.logger.info(msg=f'Database switched into {self.dbname} successfuly!')
-            """except Exception as e:
+                self.logger.error(traceback.format_exc())
+            try:
+                self.client.switch_database(database=self.dbname)
+                self.logger.info(msg=f'Database switched into {self.dbname} successfuly!')
+            except Exception as e:
                 self.logger.error(f'Exception happened when switching into {self.dbname} named database! Error message: {e}')
-                self.logger.error(traceback.format_exc())"""
+                self.logger.error(traceback.format_exc())
 
-            print('create_and_switch False çalıştı')
 
     def write_data(self, data):
-        print('write_data fonksiyonuna girildi')
         self.client.write_points(points=data)
-        print('write_data fonksiyonu çalıştı')
 
 
     def delete_database(self, force:bool):
-        print('delete_database fonksiyonuna girildi')
-        #try:
-        if force == False:
-            print('delete_database False koşuluna girildi')
-            self.logger.warning(msg=f'{self.dbname} named database is going to be deleted! Do you want to continue? (y/n)')
-            choice = input('')
-            if choice.lower == 'n':
-                self.logger.info(msg=f'Drop {self.dbname} database process canceled!')
-                return
-        self.client.drop_database(dbname=self.dbname)
-        self.logger.info(msg=f'{self.dbname} named database dropped successfuly!')
-        """except Exception as e:
+        try:
+            if force == False:
+                print('delete_database False koşuluna girildi')
+                self.logger.warning(msg=f'{self.dbname} named database is going to be deleted! Do you want to continue? (y/n)')
+                choice = input('')
+                if choice.lower == 'n':
+                    self.logger.info(msg=f'Drop {self.dbname} database process canceled!')
+                    return
+            self.client.drop_database(dbname=self.dbname)
+            self.logger.info(msg=f'{self.dbname} named database dropped successfuly!')
+        except Exception as e:
             self.logger.error(msg=f'Exception happened when dropping the {self.dbname} named database! Error message: {e}')
-            self.logger.error(traceback.format_exc())"""
+            self.logger.error(traceback.format_exc())
 
     def fetch_data(self, query:str) -> pd.DataFrame:
         # @TODO: examine the type of the data that query() func returns
         # @TODO: return the data into pandas DataFrame format
-        print('fetch_data fonksiyonuna girildi')
         returned_data = self.client.query(query=query)
         print(returned_data)
         print(type(returned_data))
-        print('fetch_data fonksiyonu çalıştı')
         
         #return self.client.query(query=query)
 
