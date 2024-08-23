@@ -7,12 +7,22 @@ import pandas as pd
 class InfluxDBWriter:
     data = [
         {
-            'test': 'sfjkslfjs', 
-            'deneme': '123',
-        }, 
+            "measurement": "temperature",
+            "tags": {
+                "location": "office"
+            },
+            "fields": {
+                "value": 23.5
+            }
+        },
         {
-            'test': 'uuıfhsnfs',
-            'deneme': '39473'
+            "measurement": "temperature",
+            "tags": {
+                "location": "lab"
+            },
+            "fields": {
+                "value": 22.0
+            }
         }
     ]
 
@@ -25,7 +35,7 @@ class InfluxDBWriter:
         self.password = password
 
         # create logger object
-        self.logger = logging.Logger(name='InfluxDBWriter')
+        self.logger = logging.getLogger(name='InfluxDBWriter')
 
         # connection
         self.client = self.connect()
@@ -34,7 +44,9 @@ class InfluxDBWriter:
     def main(self):
         self.create_and_switch_database()
         self.write_data(data=self.data)
+        self.fetch_data(query='SELECT * FROM temperature WHERE "location" = \'office\'')
         self.delete_database(force=False)
+        self.disconnect()
 
 
     def connect(self):
@@ -48,16 +60,24 @@ class InfluxDBWriter:
         """except Exception as e:
             self.logger.error(msg=f'Exception happened when creating database client! Error message: {e}')
             self.logger.error(msg=traceback.format_exc())"""
+        
+
+    def disconnect(self):
+        self.client.close()
+        self.logger.info(msg='Database connection closed!')
 
 
     def create_and_switch_database(self):
+        print('create_and_switch database fonksiyonu çalıştı')
         if self.is_exist == True:
+            print('True koşulu sağlandı')
             #try:
             self.client.switch_database(database=self.dbname)
             self.logger.info(msg=f'Database switched into {self.dbname} successfuly!')
             """except Exception as e:
                 self.logger.error(msg=f'Exception happened when switching into {self.dbname} named database! Error message: {e}')
                 self.logger.error(traceback.format_exc())"""
+            print('')
         else:
             #try:
             self.client.create_database(dbname=self.dbname)
