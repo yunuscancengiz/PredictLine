@@ -50,7 +50,8 @@ class InfluxDBWriter:
     def main(self):
         self.create_and_switch_database()
         self.write_data(data=self.data)
-        self.fetch_data(query='SELECT * FROM temperature WHERE "location" = \'office\'')
+        df = self.fetch_data(query='SELECT * FROM temperature WHERE "location" = \'office\'')
+        print(df.head())
         #self.delete_database(force=False)
         self.disconnect()
 
@@ -116,13 +117,7 @@ class InfluxDBWriter:
             self.logger.error(traceback.format_exc())
 
     def fetch_data(self, query:str) -> pd.DataFrame:
-        # @TODO: examine the type of the data that query() func returns
-        # @TODO: return the data into pandas DataFrame format
-        returned_data = list(self.client.query(query=query))
-        print(returned_data)
-        print(type(returned_data))
-        
-        #return self.client.query(query=query)
+        return pd.DataFrame(list(self.client.query(query=query))[0])
 
 if __name__ == '__main__':
     db_client = InfluxDBWriter(
