@@ -13,7 +13,7 @@ class SimpleProducer:
         self.properties_file = properties_file
         self.data_filename = data_filename
         self.producer_config = {}
-        self.messages = pd.DataFrame(self.data_filename)
+        self.messages = pd.read_csv(self.data_filename)
 
         # prepare config file
         self.read_config()
