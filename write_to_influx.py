@@ -118,9 +118,9 @@ class InfluxDBWriter:
     def fetch_data(self, query:str) -> pd.DataFrame:
         # @TODO: examine the type of the data that query() func returns
         # @TODO: return the data into pandas DataFrame format
-        returned_data = self.client.query(query=query)
-        #print(returned_data)
-        #print(type(returned_data))
+        returned_data = list(self.client.query(query=query))
+        print(returned_data)
+        print(type(returned_data))
         
         #return self.client.query(query=query)
 
