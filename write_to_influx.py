@@ -26,6 +26,15 @@ class InfluxDBWriter:
         }
     ]
 
+    # create logger object
+    logger = logging.getLogger(name='InfluxDBWriter')
+    logger.setLevel(logging.INFO)
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
+
     def __init__(self, host:str, port:int, dbname:str, is_exist=bool, username:str=None, password:str=None) -> None:
         self.host = host
         self.port = port
@@ -33,10 +42,6 @@ class InfluxDBWriter:
         self.is_exist = is_exist
         self.username = username
         self.password = password
-
-        # create logger object
-        self.logger = logging.getLogger(name='InfluxDBWriter')
-        self.logger.setLevel(logging.NOTSET)
 
         # connection
         self.client = self.connect()
