@@ -24,7 +24,7 @@ class RawDataWriter:
 
     def create_bucket(self):
         buckets_api = self.client.buckets_api()
-        buckets_api.create_bucket(bucket_name=self.bucket, org=self.org)
+        buckets_api.create_bucket(bucket_name=self.bucket, org_id=self.org)
 
 
     def write_into_bucket(self):
