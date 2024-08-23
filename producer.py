@@ -84,7 +84,7 @@ if __name__ == '__main__':
         topic='test-topic-2',
         symbol='AAPL',
         properties_file='client.properties',
-        data_filename='mini_data.csv'
+        data_filename='utils/mini_data.csv'
     )
 
     simple_producer.main()
