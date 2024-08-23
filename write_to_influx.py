@@ -45,7 +45,7 @@ class InfluxDBWriter:
         self.create_and_switch_database()
         self.write_data(data=self.data)
         self.fetch_data(query='SELECT * FROM temperature WHERE "location" = \'office\'')
-        self.delete_database(force=False)
+        #self.delete_database(force=False)
         self.disconnect()
 
 
