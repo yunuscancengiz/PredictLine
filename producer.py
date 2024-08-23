@@ -46,7 +46,6 @@ class SimpleProducer:
 
 
     def serialize_data(self, index:int):
-        print(self.messages.head())
         data = {
             'ts': str(self.messages.loc[index, 'ts']),
             'device': str(self.messages.loc[index, 'device']),
