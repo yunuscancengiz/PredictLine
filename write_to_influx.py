@@ -4,7 +4,7 @@ from influxdb_client .client.write_api import SYNCHRONOUS
 
 class RawDataWriter:
     def __init__(self) -> None:
-        self.url = 'http://34.45.38.113:8086'
+        self.url = 'http://localhost:8086'
         self.token = '222QEIh4v8r79e3ch2l6KxtHLLm1Uu4jFixG8oEKeiOE0QJdGI9KnfXbbH5kCXKz1yUsEP4MBUxHo7GYjPPQjQ=='
         self.org = 'ce891e42a1dc8e41'
         self.bucket = 'test_bucket'
