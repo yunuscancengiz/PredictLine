@@ -5,27 +5,6 @@ import pandas as pd
 
 
 class InfluxDBWriter:
-    data = [
-        {
-            "measurement": "temperature",
-            "tags": {
-                "location": "office"
-            },
-            "fields": {
-                "value": 23.5
-            }
-        },
-        {
-            "measurement": "temperature",
-            "tags": {
-                "location": "lab"
-            },
-            "fields": {
-                "value": 22.0
-            }
-        }
-    ]
-
     # create logger object
     logger = logging.getLogger(name='InfluxDBWriter')
     logger.setLevel(logging.INFO)
@@ -49,7 +28,7 @@ class InfluxDBWriter:
 
     def main(self):
         self.create_and_switch_database()
-        self.write_data(data=self.data)
+        self.write_data(data=None)
         self.fetch_data(query='SELECT * FROM temperature WHERE "location" = \'office\'')
         self.delete_database(force=False)
         self.disconnect()
@@ -103,7 +82,6 @@ class InfluxDBWriter:
     def delete_database(self, force:bool):
         try:
             if force == False:
-                print('delete_database False koşuluna girildi')
                 self.logger.warning(msg=f'{self.dbname} named database is going to be deleted! Do you want to continue? (y/n)')
                 choice = input('')
                 if choice.lower == 'n':
@@ -114,6 +92,7 @@ class InfluxDBWriter:
         except Exception as e:
             self.logger.error(msg=f'Exception happened when dropping the {self.dbname} named database! Error message: {e}')
             self.logger.error(traceback.format_exc())
+
 
     def fetch_data(self, query:str) -> pd.DataFrame:
         return pd.DataFrame(list(self.client.query(query=query))[0])

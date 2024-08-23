@@ -1,8 +1,12 @@
 from confluent_kafka import Consumer, KafkaException
 import json
 import traceback
+from write_to_influx import InfluxDBWriter
 
 class SimpleConsumer:
+    db_client = InfluxDBWriter(host='localhost', port=8086, dbname='test_db', is_exist=False)
+    db_client.create_and_switch_database()
+
     def __init__(self, topic:str, properties_file:str) -> None:
         self.topic = topic
         self.properties_file = properties_file
@@ -20,6 +24,8 @@ class SimpleConsumer:
             self.consume_messages()
         except Exception as e:
             print(f'Exception: {e}\n\n{str(traceback.format_exc())}')
+        finally:
+            self.db_client.disconnect()
 
 
     def deserialize_data(self, data):
@@ -52,6 +58,7 @@ class SimpleConsumer:
                         break
                 msg = self.deserialize_data(data=msg.value())
                 print(msg)
+                self.db_client.write_data(data=msg)
             except KeyboardInterrupt:
                 raise
             except Exception as e:
