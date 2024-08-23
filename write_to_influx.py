@@ -39,7 +39,7 @@ class RawDataWriter:
 
     def query_data(self):
         query_api = self.client.query_api()
-        query = f'from(bucket: {self.bucket}) |> range(start: -10y) |> filter(fn: (r) => r._measurement == "temperature" and r.location == "office")'
+        query = f'from(bucket: "{self.bucket}") |> range(start: -10y) |> filter(fn: (r) => r._measurement == "temperature" and r.location == "office")'
         results = query_api.query(org=self.org, query=query)
 
         for table in results:
