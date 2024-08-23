@@ -36,6 +36,7 @@ class InfluxDBWriter:
 
         # create logger object
         self.logger = logging.getLogger(name='InfluxDBWriter')
+        self.logger.setLevel(logging.DEBUG)
 
         # connection
         self.client = self.connect()
