@@ -76,6 +76,7 @@ class InfluxDBWriter:
 
 
     def write_data(self, data):
+        print(type(data))
         self.client.write_points(points=data)
 
 
