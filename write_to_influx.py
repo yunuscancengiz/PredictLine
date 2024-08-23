@@ -20,6 +20,7 @@ class RawDataWriter:
         self.create_bucket()
         self.write_into_bucket()
         self.query_data()
+        self.close_connection()
 
 
     def create_bucket(self):
@@ -52,6 +53,10 @@ class RawDataWriter:
         stop = '2023-01-01T02:00:00Z'
         delete_api = self.client.delete_api()
         delete_api.delete(start=start, stop=stop, predicate='_measurement="temperature" AND location="lab"', bucket=self.bucket, org=self.org)
+
+
+    def close_connection(self):
+        self.client.close()
 
 
 if __name__ == '__main__':
