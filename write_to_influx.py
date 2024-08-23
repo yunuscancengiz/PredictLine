@@ -79,7 +79,7 @@ class InfluxDBWriter:
         else:
             try:
                 self.client.create_database(dbname=self.dbname)
-                self.logger.info(msg=f'{self.dbname} named database created successfuly!')
+                print(self.logger.info(msg=f'{self.dbname} named database created successfuly!'))
             except Exception as e:
                 self.logger.error(f'Exception happened when creating {self.dbname} named database! Error message: {e}')
                 self.logger.error(traceback.format_exc())
