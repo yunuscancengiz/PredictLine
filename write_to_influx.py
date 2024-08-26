@@ -2,17 +2,11 @@ from influxdb import InfluxDBClient
 import traceback
 import logging
 import pandas as pd
+from _logger import ProjectLogger
 
 
 class InfluxDBWriter:
-    # create logger object
-    logger = logging.getLogger(name='InfluxDBWriter')
-    logger.setLevel(logging.INFO)
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    console_handler.setFormatter(formatter)
-    logger.addHandler(console_handler)
+    logger = ProjectLogger(class_name='InfluxDBWriter').create_logger()
 
     def __init__(self, host:str, port:int, dbname:str, is_exist=bool, username:str=None, password:str=None) -> None:
         self.host = host

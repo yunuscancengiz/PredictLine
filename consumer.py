@@ -2,8 +2,10 @@ from confluent_kafka import Consumer, KafkaException
 import json
 import traceback
 from write_to_influx import InfluxDBWriter
+from _logger import ProjectLogger
 
 class SimpleConsumer:
+    logger = ProjectLogger(class_name='SimpleConsumer').create_logger()
     db_client = InfluxDBWriter(host='localhost', port=8086, dbname='test_db', is_exist=False)
     db_client.create_and_switch_database()
 
@@ -23,7 +25,8 @@ class SimpleConsumer:
         try:
             self.consume_messages()
         except Exception as e:
-            print(f'Exception: {e}\n\n{str(traceback.format_exc())}')
+            self.logger.error(msg=f'Exception happened in main function, error: {e}')
+            self.logger.error(msg=traceback.format_exc())
         finally:
             self.db_client.disconnect()
 
@@ -54,15 +57,16 @@ class SimpleConsumer:
                     if msg.error().code() == KafkaException._PARTITION_EOF:
                         continue
                     else:
-                        print(f'Error: {msg.error()}')
+                        self.logger.error(msg=f'Error: {msg.error()}')
                         break
                 msg = self.deserialize_data(data=msg.value())
-                print(msg)
+                self.logger.info(msg=f'Consumed message: {msg}')
                 self.db_client.write_data(data=msg)
             except KeyboardInterrupt:
                 raise
             except Exception as e:
-                print(f'Exception happened when consuming messages, error: {e}\n\n{str(traceback.format_exc())}')
+                self.logger.error(msg=f'Exception happened when consuming messages, error: {e}')
+                self.logger.error(traceback.format_exc())
 
 
 if __name__ == '__main__':

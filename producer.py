@@ -3,9 +3,12 @@ import time
 import json
 import traceback
 import pandas as pd
+from _logger import ProjectLogger
 
 
 class SimpleProducer:
+    logger = ProjectLogger(class_name='SimpleProducer').create_logger()
+
     def __init__(self, topic:str, symbol:str, properties_file:str, data_filename:str) -> None:
         self.topic = topic
         self.symbol = symbol
@@ -24,7 +27,8 @@ class SimpleProducer:
         try:
             self.produce_messages()
         except Exception as e:
-            print(f'Exception: {e}\n\n{str(traceback.format_exc())}')
+            self.logger.error(msg=f'Exception happened in main function, error: {e}')
+            self.logger.error(msg=traceback.format_exc())
         except KeyboardInterrupt:
             raise
 
@@ -37,12 +41,11 @@ class SimpleProducer:
                     self.producer_config[parameter] = value.strip()
 
 
-    @staticmethod
-    def delivery_report(err, msg):
+    def delivery_report(self, err, msg):
         if err is not None:
-            print(f'Delivery failed for {msg.key()}, error: {err}')
+            self.logger.warning(msg=f'Delivery failed for {msg.key()}, error: {err}')
             return
-        print(f'Record:{msg.key()} successfully produced to topic:{msg.topic()} partition:[{msg.partition()}] at offset:{msg.offset()}')
+        self.logger.info(msg=f'Record: {msg.key()} successfuly produced to topic: {msg.topic()} partition: [{msg.partition()}] at offset: {msg.offset()}')
 
 
     def serialize_data(self, index:int):
@@ -70,7 +73,8 @@ class SimpleProducer:
             except BufferError:
                 self.producer.poll(0.1)
             except Exception as e:
-                print(f'Exception while producing message - index: {index}, Err: {e}\n\n{str(traceback.format_exc())}')
+                self.logger.error(msg=f'Exception while producing message - index: {index}, Err: {e}')
+                self.logger.error(msg=traceback.format_exc())
             except KeyboardInterrupt:
                 raise
         self.producer.flush()
