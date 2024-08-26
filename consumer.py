@@ -59,7 +59,7 @@ class SimpleConsumer:
                     else:
                         self.logger.error(msg=f'Error: {msg.error()}')
                         break
-                msg = self.deserialize_data(data=msg.value())
+                msg = self.deserialize_data(data=msg.value().decode('utf-8'))
                 self.logger.info(msg=f'Consumed message: {msg}')
 
                 print(f'\n-------------------\n{type(msg)}\n-------------------\n')
