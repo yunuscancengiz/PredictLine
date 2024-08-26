@@ -61,6 +61,8 @@ class SimpleConsumer:
                         break
                 msg = self.deserialize_data(data=msg.value())
                 self.logger.info(msg=f'Consumed message: {msg}')
+
+                print(f'\n-------------------\n{type(msg)}\n-------------------\n')
                 
                 # @TODO: update write_data function with influxdb json format then comment out the next line
                 self.db_client.write_data(data=msg)
