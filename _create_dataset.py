@@ -5,6 +5,16 @@ import os
 from dotenv import load_dotenv
 
 class DatasetCreator:
+    ''' 
+    Blower-Pump-1
+    Blower-Pump-2
+    Blower-Pump-3
+    Blower-Pump-4
+    Vacuum-Pump-2
+    Vacuum-Pump-3
+    Vacuum-Pump-4
+    Vacuum-Pump-5
+    '''
     load_dotenv()
     BUCKET = os.getenv('INFLUX_BUCKET')
     ORG = os.getenv('INFLUX_ORG')
@@ -79,8 +89,8 @@ class DatasetCreator:
         
 if __name__ == '__main__':
     dataset_creator = DatasetCreator(
-        filename='dataset-16d-14d.csv',
-        start='16d',
-        stop='-14d'
+        filename='dataset-120d-90d.csv',
+        start='120d',
+        stop='-90d'
     )
     dataset_creator.main()
