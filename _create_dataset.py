@@ -65,6 +65,7 @@ class DatasetCreator:
 
     def create_csv(self):
         data = {}
+        print(self.df.head())
         for col in self.df_columns:
             if col == 'machine' or col == 'time':
                 data[col] = self.df.loc[self.df['field'] == 'axialAxisRmsVibration'][col].reset_index(drop=True)
@@ -78,7 +79,8 @@ class DatasetCreator:
         
 if __name__ == '__main__':
     dataset_creator = DatasetCreator(
-        filename='test.csv',
-        start='1d'
+        filename='dataset-16d-14d.csv',
+        start='16d',
+        stop='-14d'
     )
     dataset_creator.main()
