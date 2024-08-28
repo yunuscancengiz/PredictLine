@@ -4,7 +4,7 @@ import numpy as np
 import os
 from dotenv import load_dotenv
 
-class CreateDataset:
+class DatasetCreator:
     load_dotenv()
     BUCKET = os.getenv('INFLUX_BUCKET')
     ORG = os.getenv('INFLUX_ORG')
@@ -12,8 +12,10 @@ class CreateDataset:
     URL = os.getenv('INFLUX_URL')
 
     db_columns = ['', 'result', 'table', '_start', '_stop', '_time', '_value', '_field', '_measurement', 'host', 'line', 'machine', 'name', 'slave_id', 'type']
+    df_columns = ['machine', 'time', 'axialAxisRmsVibration', 'radialAxisKurtosis', 'radialAxisPeakAcceleration', 'radialAxisRmsAcceleration', 'radialAxisRmsVibration', 'temperature']
 
-    def __init__(self, start:str, stop:str='now()', machine:str='Blower-Pump-1', timeframe:str='1m') -> None:
+    def __init__(self, filename:str, start:str, stop:str='now()', machine:str='Blower-Pump-1', timeframe:str='1m') -> None:
+        self.filename = filename
         self.start = start
         self.stop = stop
         self.machine = machine
@@ -40,9 +42,14 @@ class CreateDataset:
         '''
 
 
+    def main(self):
+        self.fetch_data()
+        self.create_csv()
+
+
     def fetch_data(self):
         rows = self.query_api.query_csv(query=self.query)
-        self.df = pd.DataFrame(rows, columns=self.columns).iloc[4:, :]
+        self.df = pd.DataFrame(rows, columns=self.db_columns).iloc[4:, :]
         list_for_df = []
         for time, field, value, machine in zip(self.df['_time'], self.df['_field'], self.df['_value'], self.df['machine']):
             list_for_df.append(
@@ -57,4 +64,21 @@ class CreateDataset:
 
 
     def create_csv(self):
-        pass
+        data = {}
+        for col in self.df_columns:
+            if col == 'machine' or col == 'time':
+                data[col] = self.df.loc[self.df['field'] == 'axialAxisRmsVibration'][col].reset_index(drop=True)
+            else:
+                data[col] = self.df.loc[self.df['field'] == col]['value'].reset_index(drop=True)
+
+        self.df = pd.DataFrame(data)
+        self.df.to_csv(self.filename, index=False)
+        return self.df
+
+        
+if __name__ == '__main__':
+    dataset_creator = DatasetCreator(
+        filename='test.csv',
+        start='1d'
+    )
+    dataset_creator.main()
