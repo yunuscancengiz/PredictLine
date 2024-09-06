@@ -21,7 +21,7 @@ class RandomModelResults:
         print('4')
         self.check_data()
         print('5')
-        
+
 
     def generate_random_results(self):
         for size in self.sizes:
@@ -44,4 +44,5 @@ class RandomModelResults:
         self.postgre_client.fetch_data(table_name='results')
 
 if __name__ == '__main__':
+    print('test')
     random_result_generator = RandomModelResults()

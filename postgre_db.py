@@ -16,6 +16,7 @@ class PostgreClient:
     POSTGRE_DB_NAME = os.getenv('POSTGRE_DB_NAME')
 
     def __init__(self):
+        print(f'{self.POSTGRE_USERNAME}\n{self.POSTGRE_PASSWORD}\n{self.POSTGRE_HOST}\n{self.POSTGRE_PORT}')
         self.db_client = psycopg2.connect(
             user=self.POSTGRE_USERNAME,
             password=self.POSTGRE_PASSWORD,
