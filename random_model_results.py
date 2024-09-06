@@ -12,11 +12,16 @@ class RandomModelResults:
         self.results = []
 
         # run app
+        print('1')
         self.postgre_client.create_table(table_name='results')
+        print('2')
         self.generate_random_results()
+        print('3')
         self.insert_results_to_db()
+        print('4')
         self.check_data()
-
+        print('5')
+        
 
     def generate_random_results(self):
         for size in self.sizes:
