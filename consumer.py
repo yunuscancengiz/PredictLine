@@ -75,7 +75,7 @@ class SimpleConsumer:
 
 if __name__ == '__main__':
     simple_consumer = SimpleConsumer(
-        topic='test-topic-2',
+        topic='raw_data',
         properties_file='client.properties'
     )
 

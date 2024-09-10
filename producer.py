@@ -83,7 +83,7 @@ class SimpleProducer:
 
 if __name__ == '__main__':
     simple_producer = SimpleProducer(
-        topic='test-topic-2',
+        topic='raw_data',
         symbol='AAPL',
         properties_file='client.properties',
         data_filename='utils/mini_data.csv'
