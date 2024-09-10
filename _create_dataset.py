@@ -1,6 +1,5 @@
 from influxdb_client import InfluxDBClient
 import pandas as pd
-import numpy as np
 import os
 from dotenv import load_dotenv
 import time
