@@ -33,12 +33,15 @@ class SimpleProducer:
             raise
 
     def read_config(self):
-        with open(self.properties_file) as fh:
+        """with open(self.properties_file) as fh:
             for line in fh:
                 line = line.strip()
                 if len(line) != 0 and line[0] != '#':
                     parameter, value = line.strip().split('=', 1)
-                    self.producer_config[parameter] = value.strip()
+                    self.producer_config[parameter] = value.strip()"""
+        self.producer_config = {
+            'bootstrap.servers': '34.45.38.113:9092'
+        }
 
 
     def delivery_report(self, err, msg):

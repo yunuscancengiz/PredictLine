@@ -36,14 +36,19 @@ class SimpleConsumer:
 
 
     def read_config(self):
-        with open(self.properties_file) as fh:
+        """with open(self.properties_file) as fh:
             for line in fh:
                 line = line.strip()
                 if len(line) != 0 and line[0] != '#':
                     parameter, value = line.strip().split('=', 1)
                     self.consumer_config[parameter] = value
         self.consumer_config['group.id'] = 'python-group-1'
-        self.consumer_config['auto.offset.reset'] = 'earliest'
+        self.consumer_config['auto.offset.reset'] = 'earliest'"""
+        self.consumer_config = {
+            'bootstrap.servers': '34.45.38.113:9092',
+            'group.id': 'my-group',
+            'auto.offset.reset': 'earliest'
+        }
 
 
     def consume_messages(self):
