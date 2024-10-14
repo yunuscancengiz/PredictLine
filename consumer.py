@@ -1,21 +1,25 @@
 from confluent_kafka import Consumer, KafkaException
 import json
 import traceback
-from write_to_influx import InfluxDBWriter
 from _logger import ProjectLogger
+from dotenv import load_dotenv
+import os
+
 
 class SimpleConsumer:
+    load_dotenv()
+    SERVER_IP = os.getenv('GCP_IP')
     logger = ProjectLogger(class_name='SimpleConsumer').create_logger()
-    #db_client = InfluxDBWriter(host='localhost', port=8086, dbname='test_db', is_exist=False)
-    #db_client.create_and_switch_database()
 
-    def __init__(self, topic:str, properties_file:str) -> None:
+    def __init__(self, topic:str) -> None:
         self.topic = topic
-        self.properties_file = properties_file
-        self.consumer_config = {}
 
         # create consumer config
-        self.read_config()
+        self.consumer_config = {
+            'bootstrap.servers': f'{self.SERVER_IP}:9092',
+            'group.id': 'my-group',
+            'auto.offset.reset': 'earliest'
+        }
 
         # create consumer object using config dict
         self.consumer = Consumer(self.consumer_config)
@@ -36,22 +40,6 @@ class SimpleConsumer:
         return json.loads(data)
 
 
-    def read_config(self):
-        """with open(self.properties_file) as fh:
-            for line in fh:
-                line = line.strip()
-                if len(line) != 0 and line[0] != '#':
-                    parameter, value = line.strip().split('=', 1)
-                    self.consumer_config[parameter] = value
-        self.consumer_config['group.id'] = 'python-group-1'
-        self.consumer_config['auto.offset.reset'] = 'earliest'"""
-        self.consumer_config = {
-            'bootstrap.servers': '34.45.38.113:9092',
-            'group.id': 'my-group',
-            'auto.offset.reset': 'earliest'
-        }
-
-
     def consume_messages(self):
         self.consumer.subscribe(topics=[self.topic])
         while True:
@@ -68,10 +56,6 @@ class SimpleConsumer:
                 msg = self.deserialize_data(data=msg.value())
                 self.logger.info(msg=f'Consumed message: {msg}')
                 
-                # @TODO: update write_data function with influxdb json format then comment out the next line
-                # @TODO: write data into the druid (v1)
-                # @TODO: consume data using druid (v2)
-                #self.db_client.write_data(data=msg)
             except KeyboardInterrupt:
                 raise
             except Exception as e:
@@ -81,8 +65,7 @@ class SimpleConsumer:
 
 if __name__ == '__main__':
     simple_consumer = SimpleConsumer(
-        topic='test-topic',
-        properties_file='client.properties'
+        topic='test-topic'
     )
 
     simple_consumer.main()

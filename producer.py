@@ -5,17 +5,20 @@ import traceback
 import pandas as pd
 from _logger import ProjectLogger
 from _create_dataset import DatasetCreator
+from dotenv import load_dotenv
+import os
 
 
 class SimpleProducer:
+    load_dotenv()
+    SERVER_IP = os.getenv('GCP_IP')
     logger = ProjectLogger(class_name='SimpleProducer').create_logger()
 
-    def __init__(self, topic:str, symbol:str, properties_file:str, data_filename:str) -> None:
+    def __init__(self, topic:str) -> None:
         self.topic = topic
-        self.symbol = symbol
-        self.properties_file = properties_file
-        #self.data_filename = data_filename
-        self.producer_config = {}
+        self.producer_config = {
+            'bootstrap.servers': f'{self.SERVER_IP}:9092'
+        }
 
         # fetch messages
         dataset_creator = DatasetCreator(start='-1d', stop='now()', line='L301', machine='Blower-Pump-1', timeframe='15m')
@@ -23,11 +26,9 @@ class SimpleProducer:
         
         self.messages = pd.read_csv(self.data_filename)
 
-        # prepare config file
-        self.read_config()
-
         # create producer object using config dict
         self.producer  = Producer(self.producer_config)
+
 
     def main(self):
         try:
@@ -37,17 +38,6 @@ class SimpleProducer:
             self.logger.error(msg=traceback.format_exc())
         except KeyboardInterrupt:
             raise
-
-    def read_config(self):
-        """with open(self.properties_file) as fh:
-            for line in fh:
-                line = line.strip()
-                if len(line) != 0 and line[0] != '#':
-                    parameter, value = line.strip().split('=', 1)
-                    self.producer_config[parameter] = value.strip()"""
-        self.producer_config = {
-            'bootstrap.servers': '34.45.38.113:9092'
-        }
 
 
     def delivery_report(self, err, msg):
@@ -71,23 +61,6 @@ class SimpleProducer:
         key = str(int(time.time()))
         value = json.dumps(data).encode(encoding='utf-8')
         return key, value
-
-
-    def ex_serialize_data(self, index:int):
-        data = {
-            'ts': str(self.messages.loc[index, 'ts']),
-            'device': str(self.messages.loc[index, 'device']),
-            'co': str(self.messages.loc[index, 'co']),
-            'humidity': str(self.messages.loc[index, 'humidity']),
-            'light': str(self.messages.loc[index, 'light']),
-            'lpg': str(self.messages.loc[index, 'lpg']),
-            'motion': str(self.messages.loc[index, 'motion']),
-            'smoke': str(self.messages.loc[index, 'smoke']),
-            'temp': str(self.messages.loc[index, 'temp'])
-        }
-        key = str(int(time.time()))
-        value = json.dumps(data).encode(encoding='utf-8')
-        return key, value
     
 
     def produce_messages(self):
@@ -107,11 +80,5 @@ class SimpleProducer:
 
 
 if __name__ == '__main__':
-    simple_producer = SimpleProducer(
-        topic='test-topic',
-        symbol='AAPL',
-        properties_file='client.properties',
-        data_filename='utils/mini_data.csv'
-    )
-
+    simple_producer = SimpleProducer(topic='test-topic')
     simple_producer.main()
