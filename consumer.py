@@ -6,8 +6,8 @@ from _logger import ProjectLogger
 
 class SimpleConsumer:
     logger = ProjectLogger(class_name='SimpleConsumer').create_logger()
-    db_client = InfluxDBWriter(host='localhost', port=8086, dbname='test_db', is_exist=False)
-    db_client.create_and_switch_database()
+    #db_client = InfluxDBWriter(host='localhost', port=8086, dbname='test_db', is_exist=False)
+    #db_client.create_and_switch_database()
 
     def __init__(self, topic:str, properties_file:str) -> None:
         self.topic = topic
@@ -28,7 +28,8 @@ class SimpleConsumer:
             self.logger.error(msg=f'Exception happened in main function, error: {e}')
             self.logger.error(msg=traceback.format_exc())
         finally:
-            self.db_client.disconnect()
+            pass
+            #self.db_client.disconnect()
 
 
     def deserialize_data(self, data):
@@ -70,7 +71,7 @@ class SimpleConsumer:
                 # @TODO: update write_data function with influxdb json format then comment out the next line
                 # @TODO: write data into the druid (v1)
                 # @TODO: consume data using druid (v2)
-                self.db_client.write_data(data=msg)
+                #self.db_client.write_data(data=msg)
             except KeyboardInterrupt:
                 raise
             except Exception as e:
@@ -80,7 +81,7 @@ class SimpleConsumer:
 
 if __name__ == '__main__':
     simple_consumer = SimpleConsumer(
-        topic='raw_data',
+        topic='test-topic',
         properties_file='client.properties'
     )
 
