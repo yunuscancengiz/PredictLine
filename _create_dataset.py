@@ -40,8 +40,15 @@ class DatasetCreator:
 
         self.query_api = self.client.query_api()
 
-
     def main(self):
+        self.filename
+        self.update_query()
+        self.fetch_data()
+        self.create_csv()
+        return f'{self.DATASET_PATH}/{self.filename}'
+
+
+    def main_multiple(self):
         for machine in self.machine_list:
             self.machine = machine
             self.filename = self.create_filename()
@@ -109,4 +116,4 @@ if __name__ == '__main__':
         machine_list=['Vacuum-Pump-2'],
         line='L302'
     )
-    dataset_creator.main()
+    dataset_creator.main_multiple()

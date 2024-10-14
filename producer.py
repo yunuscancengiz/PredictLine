@@ -4,6 +4,7 @@ import json
 import traceback
 import pandas as pd
 from _logger import ProjectLogger
+from _create_dataset import DatasetCreator
 
 
 class SimpleProducer:
@@ -13,8 +14,13 @@ class SimpleProducer:
         self.topic = topic
         self.symbol = symbol
         self.properties_file = properties_file
-        self.data_filename = data_filename
+        #self.data_filename = data_filename
         self.producer_config = {}
+
+        # fetch messages
+        dataset_creator = DatasetCreator(start='-1d', stop='now()', line='L301', machine='Blower-Pump-1', timeframe='15m')
+        self.data_filename = dataset_creator.main()
+        
         self.messages = pd.read_csv(self.data_filename)
 
         # prepare config file
@@ -52,6 +58,22 @@ class SimpleProducer:
 
 
     def serialize_data(self, index:int):
+        data = {
+            'machine': str(self.messages.loc[index, 'machine']),
+            'time': str(self.messages.loc[index, 'time']),
+            'axialAxisRmsVibration': str(self.messages.loc[index, 'axialAxisRmsVibration']),
+            'radialAxisKurtosis': str(self.messages.loc[index, 'radialAxisKurtosis']),
+            'radialAxisPeakAcceleration': str(self.messages.loc[index, 'radialAxisPeakAcceleration']),
+            'radialAxisRmsAcceleration': str(self.messages.loc[index, 'radialAxisRmsAcceleration']),
+            'radialAxisRmsVibration': str(self.messages.loc[index, 'radialAxisRmsVibration']),
+            'temperature': str(self.messages.loc[index, 'temperature'])
+        }
+        key = str(int(time.time()))
+        value = json.dumps(data).encode(encoding='utf-8')
+        return key, value
+
+
+    def ex_serialize_data(self, index:int):
         data = {
             'ts': str(self.messages.loc[index, 'ts']),
             'device': str(self.messages.loc[index, 'device']),
