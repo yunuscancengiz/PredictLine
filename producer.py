@@ -80,5 +80,5 @@ class SimpleProducer:
 
 
 if __name__ == '__main__':
-    simple_producer = SimpleProducer(topic='test-topic')
+    simple_producer = SimpleProducer(topic='raw-data')
     simple_producer.main()

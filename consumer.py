@@ -64,8 +64,5 @@ class SimpleConsumer:
 
 
 if __name__ == '__main__':
-    simple_consumer = SimpleConsumer(
-        topic='test-topic'
-    )
-
+    simple_consumer = SimpleConsumer(topic='raw-data')
     simple_consumer.main()
