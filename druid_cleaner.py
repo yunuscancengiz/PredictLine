@@ -14,7 +14,6 @@ class DruidCleaner:
     RETENTION_DAYS = 10
     logger = ProjectLogger(class_name='DruidCleaner').create_logger()
 
-    logger.nfo(msg=f'{'0000-01-01T00:00:00Z'/'2024-10-28T14:59:10'}')
 
     def __init__(self, datasource:str='processed-data') -> None:
         self.datasource = datasource
@@ -38,12 +37,12 @@ class DruidCleaner:
 
 
     def clean(self, payload):
-        response = requests.delete(f'{self.DRUID_COORDINATOR_URL}/{self.datasource}/segments', json=payload)
+        response = requests.post(f'{self.DRUID_COORDINATOR_URL}/{self.datasource}/markUnused', json=payload)
 
         if response.status_code == 200:
-            print('Old data deletion initiated successfully.')
+            self.logger.info(msg='Old data deletion initiated successfully.')
         else:
-            print(f'Failed to initiate data deletion. Status code: {response.status_code}, Response: {response.text}')
+            self.logger.warning(msg=f'Failed to initiate data deletion. Status code: {response.status_code}, Response: {response.text}')
 
 
 if __name__ == '__main__':
