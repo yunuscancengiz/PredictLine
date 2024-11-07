@@ -16,18 +16,13 @@ class PostgreClient:
     POSTGRE_DB_NAME = os.getenv('POSTGRE_DB_NAME')
 
     def __init__(self):
-        print('ehe')
-        print(f'{self.POSTGRE_USERNAME}\n{self.POSTGRE_PASSWORD}\n{self.POSTGRE_HOST}\n{self.POSTGRE_PORT}')
         self.db_client = psycopg2.connect(
             user=self.POSTGRE_USERNAME,
             password=self.POSTGRE_PASSWORD,
             host=self.POSTGRE_HOST,
             port=self.POSTGRE_PORT
         )
-        # database=self.POSTGRE_DB_NAME
         self.cursor = self.db_client.cursor()
-
-        print(self.db_client.get_dsn_parameters())
 
 
     def create_table(self, table_name:str):
@@ -54,10 +49,8 @@ class PostgreClient:
     def fetch_data(self, table_name:str):
         query = f'SELECT * FROM {table_name};'
         self.cursor.execute(query=query)
-
         results = self.cursor.fetchall()
-        for result in results:
-            print(result)
+        return results
 
 
     def update_data(self, table_name:str, column_name:str, new_value, _id:int):

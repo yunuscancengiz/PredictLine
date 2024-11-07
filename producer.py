@@ -14,17 +14,23 @@ class SimpleProducer:
     SERVER_IP = os.getenv('GCP_IP')
     logger = ProjectLogger(class_name='SimpleProducer').create_logger()
 
-    def __init__(self, topic:str) -> None:
+    def __init__(self, topic:str, data_filename:str=None, df=None) -> None:
         self.topic = topic
+        self.data_filename = data_filename
+        self.df = df
         self.producer_config = {
             'bootstrap.servers': f'{self.SERVER_IP}:9092'
         }
 
-        # fetch messages
-        dataset_creator = DatasetCreator(start='-1d', stop='now()', line='L301', machine='Blower-Pump-1', timeframe='15m')
-        self.data_filename = dataset_creator.main()
-        
-        self.messages = pd.read_csv(self.data_filename)
+        if self.df != None:
+            self.messages = self.df
+        else:
+            if self.data_filename == None:
+                # fetch messages
+                dataset_creator = DatasetCreator(start='-1d', stop='now()', line='L301', machine='Blower-Pump-1', timeframe='15m')
+                self.data_filename = dataset_creator.main()
+            
+            self.messages = pd.read_csv(self.data_filename)
 
         # create producer object using config dict
         self.producer  = Producer(self.producer_config)
