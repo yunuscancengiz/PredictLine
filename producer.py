@@ -29,7 +29,7 @@ class SimpleProducer:
             self.data_filename = data_filename
             self.df = df
 
-            self.prepare_messsages()
+            self.prepare_messages()
 
             # create producer object using config dict
             self.producer  = Producer(self.producer_config)
