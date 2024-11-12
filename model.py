@@ -1,5 +1,4 @@
 import numpy as np
-from statsmodels.tsa.arima.model import ARIMA
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.models import Sequential
@@ -8,11 +7,11 @@ from tensorflow.keras.callbacks import EarlyStopping
 
 
 class RNNModel:
-    def __init__(self, filename:str, input_steps:int=500, output_steps:int=50):
+    def __init__(self, filename:str, input_days:int, output_days:int, interval_minute:int):
         self.df = pd.read_csv(filename)
         self.processed_df = self.preprocess(df=self.df)
-        self.input_steps = input_steps
-        self.output_steps = output_steps
+        self.input_steps = input_days * 24 * (60 / interval_minute)
+        self.output_steps = output_days * 24 * (60 / interval_minute)
 
         # normalize data
         self.input_columns = ['axialAxisRmsVibration', 'radialAxisKurtosis', 'radialAxisPeakAcceleration', 'radialAxisRmsAcceleration', 'radialAxisRmsVibration', 'temperature', 'is_running']

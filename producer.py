@@ -14,14 +14,35 @@ class SimpleProducer:
     SERVER_IP = os.getenv('GCP_IP')
     logger = ProjectLogger(class_name='SimpleProducer').create_logger()
 
-    def __init__(self, topic:str, data_filename:str=None, df=None) -> None:
-        self.topic = topic
-        self.data_filename = data_filename
-        self.df = df
+    def __init__(self) -> None:
+        self.topic = None
+        self.data_filename = None
+        self.df = None
         self.producer_config = {
             'bootstrap.servers': f'{self.SERVER_IP}:9092'
         }
 
+
+    def main(self, topic:str, data_filename:str=None, df=None):
+        try:
+            self.topic = topic
+            self.data_filename = data_filename
+            self.df = df
+
+            self.prepare_messsages()
+
+            # create producer object using config dict
+            self.producer  = Producer(self.producer_config)
+
+            self.produce_messages()
+        except Exception as e:
+            self.logger.error(msg=f'Exception happened in main function, error: {e}')
+            self.logger.error(msg=traceback.format_exc())
+        except KeyboardInterrupt:
+            raise
+
+
+    def prepare_messages(self):
         if self.df != None:
             self.messages = self.df
         else:
@@ -31,19 +52,6 @@ class SimpleProducer:
                 self.data_filename = dataset_creator.main()
             
             self.messages = pd.read_csv(self.data_filename)
-
-        # create producer object using config dict
-        self.producer  = Producer(self.producer_config)
-
-
-    def main(self):
-        try:
-            self.produce_messages()
-        except Exception as e:
-            self.logger.error(msg=f'Exception happened in main function, error: {e}')
-            self.logger.error(msg=traceback.format_exc())
-        except KeyboardInterrupt:
-            raise
 
 
     def delivery_report(self, err, msg):

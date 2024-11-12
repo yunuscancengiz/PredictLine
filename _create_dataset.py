@@ -20,12 +20,12 @@ class DatasetCreator:
     df_columns = ['machine', 'time', 'axialAxisRmsVibration', 'radialAxisKurtosis', 'radialAxisPeakAcceleration', 'radialAxisRmsAcceleration', 'radialAxisRmsVibration', 'temperature']
     default_machine_list = ['Blower-Pump-1', 'Blower-Pump-2', 'Blower-Pump-3', 'Blower-Pump-4', 'Vacuum-Pump-2', 'Vacuum-Pump-3', 'Vacuum-Pump-4', 'Vacuum-Pump-5']
 
-    def __init__(self, start:str, stop:str='now()', line:str='L301', machine:str=None, timeframe:str='1m', machine_list:list=None) -> None:
-        self.start = start
-        self.stop = stop
-        self.line = line
+    def __init__(self, machine:str=None, machine_list:list=None) -> None:
+        self.start = None
+        self.stop = None
+        self.line = None
         self.machine = machine
-        self.timeframe = timeframe
+        self.timeframe = None
         self.machine_list = machine_list
         self.filename = None
 
@@ -40,8 +40,13 @@ class DatasetCreator:
 
         self.query_api = self.client.query_api()
 
-    def main(self):
-        self.filename
+    def main(self, start:str, stop:str, line:str, timeframe:str):
+        self.start = start
+        self.stop = stop
+        self.line = line
+        self.timeframe = timeframe
+
+        self.filename = self.create_filename()
         self.update_query()
         self.fetch_data()
         self.create_csv()
@@ -105,7 +110,7 @@ class DatasetCreator:
     def create_filename(self):
         start = self.start.lstrip('-').rstrip('Z').replace(':', '-').replace(':', '-')
         stop = self.stop.lstrip('-').rstrip('Z').replace(':', '-').replace(':', '-')
-        return f'{self.line}-{self.machine}-dataset-{start}-{stop}.csv'
+        return f'{self.line}-{self.machine}-dataset-{start}-{stop}-{self.timeframe}.csv'
 
 
         

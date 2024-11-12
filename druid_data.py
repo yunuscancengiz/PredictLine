@@ -15,16 +15,15 @@ class DruidDataFetcher:
 
     logger = ProjectLogger(class_name='DruidDataFetcher').create_logger()
 
-    def __init__(self, topic:str):
-        self.topic = topic
+    def __init__(self):
+        self.topic = None
         self.url = f'http://{self.SERVER_IP}:{self.PORT}/druid/v2/sql'
-        self.query = f'SELECT * FROM "{self.topic}"'
-        self.payload = json.dumps({'query': self.query})
-        self.headers = {'Content-Type': 'application/json'}
 
 
-    def main(self):
+    def main(self, topic:str):
         try:
+            self.topic = topic
+
             data = self.fetch()
             df = self.convert_into_df(data=data)
             return df
@@ -34,7 +33,10 @@ class DruidDataFetcher:
 
 
     def fetch(self):
-        response = requests.post(self.url, headers=self.headers, data=self.payload)
+        query = f'SELECT * FROM "{self.topic}"'
+        payload = json.dumps({'query': query})
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(self.url, headers=headers, data=payload)
         if response.status_code == 200:
             self.logger.info(msg=f'Data successfuly fetched from {self.topic} named table!')
             data = response.json()
