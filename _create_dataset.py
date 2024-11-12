@@ -20,11 +20,11 @@ class DatasetCreator:
     df_columns = ['machine', 'time', 'axialAxisRmsVibration', 'radialAxisKurtosis', 'radialAxisPeakAcceleration', 'radialAxisRmsAcceleration', 'radialAxisRmsVibration', 'temperature']
     default_machine_list = ['Blower-Pump-1', 'Blower-Pump-2', 'Blower-Pump-3', 'Blower-Pump-4', 'Vacuum-Pump-2', 'Vacuum-Pump-3', 'Vacuum-Pump-4', 'Vacuum-Pump-5']
 
-    def __init__(self, machine:str=None, machine_list:list=None) -> None:
+    def __init__(self, machine_list:list=None) -> None:
         self.start = None
         self.stop = None
         self.line = None
-        self.machine = machine
+        self.machine = None
         self.timeframe = None
         self.machine_list = machine_list
         self.filename = None
@@ -40,11 +40,12 @@ class DatasetCreator:
 
         self.query_api = self.client.query_api()
 
-    def main(self, start:str, stop:str, line:str, timeframe:str):
+    def main(self, start:str, stop:str, line:str, timeframe:str, machine:str):
         self.start = start
         self.stop = stop
         self.line = line
         self.timeframe = timeframe
+        self.machine = machine
 
         self.filename = self.create_filename()
         self.update_query()

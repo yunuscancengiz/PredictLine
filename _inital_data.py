@@ -27,8 +27,8 @@ class PrepareInitialData:
 
 
     def prepare_datasets(self):
-        filename_1m = self.dataset_creator.main(start=self.starting_date_1m, stop=self.ending_date_1m, line='L301', timeframe='1m')
-        filename_15m = self.dataset_creator.main(start=self.starting_date_15m, stop=self.ending_date_15m, line='L301', timeframe='15m')
+        filename_1m = self.dataset_creator.main(start=self.starting_date_1m, stop=self.ending_date_1m, line='L301', timeframe='1m', machine='Blower-Pump-1')
+        filename_15m = self.dataset_creator.main(start=self.starting_date_15m, stop=self.ending_date_15m, line='L301', timeframe='15m', machine='Blower-Pump-1')
         return filename_1m, filename_15m
 
 
