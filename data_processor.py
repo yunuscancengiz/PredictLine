@@ -12,12 +12,13 @@ class DataPreprocessor:
     }
     logger = ProjectLogger(class_name='DataPreprocessor').create_logger()
 
-    def __init__(self, df:pd.DataFrame):
-        self.df = df
+    def __init__(self):
+        self.df = None
 
 
-    def main(self):
+    def main(self, df:pd.DataFrame):
         try:
+            self.df = df
             self.process()
             self.logger.info('Data pre-processed successfuly!')
             return self.df

@@ -78,7 +78,6 @@ class DatasetCreator:
                 }
             )
         self.df = pd.DataFrame(list_for_df)
-        print(self.df.head())   # @TODO: added to bug fix.. will be deleted
 
 
     def create_csv(self):
