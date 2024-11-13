@@ -2,49 +2,80 @@ from _create_dataset import DatasetCreator
 from producer import SimpleProducer
 from data_processor import DataPreprocessor
 from druid_data import DruidDataFetcher
-from model import Model
+from model import RNNModel
 from postgre_db import PostgreClient
 import time
+from datetime import datetime, timedelta
 
 
-class Run:
-    def __init__(self) -> None:
+class RunPipeline:
+    def __init__(self):
+        self.dataset_creator = DatasetCreator()
+        self.producer = SimpleProducer()
+        self.druid_fetcher = DruidDataFetcher()
+        self.preprocesser = DataPreprocessor()
+        self.lstm_model = RNNModel()
+        self.postgre_client = PostgreClient()
+
+        self.starting_date = None
+        self.ending_date = None
+
+
+    def run(self):
+        while True:
+            now = datetime.now()
+            if now.hour == 3 and now.minute == 22:
+                self.pipeline()
+
+            # sleep until next midnight
+            tomorrow = datetime.now() + timedelta(days=1)
+            next_midnight = datetime.combine(tomorrow.date(), datetime.min.time())
+            sleep_seconds = (next_midnight - datetime.now()).total_seconds()
+            print(sleep_seconds)
+            time.sleep(sleep_seconds)
+
+
+    def pipeline(self):
+        # calculate starting and ending dates
+        self.starting_date = str((datetime.now() - timedelta(days=1)).isoformat()).split('T')[0] + 'T00:00:00Z'
+        self.ending_date = str((datetime.now() - timedelta(days=1)).isoformat()).split('T')[0] + 'T23:59:00Z'
+
         # create dataset
-        self.dataset_creator = DatasetCreator(start='-30d', stop='now()', line='L301', machine='Blower-Pump-1', timeframe='1m')
-        csv_filename = self.dataset_creator.main()
+        filename_1m = self.dataset_creator.main(start=self.starting_date, stop=self.ending_date, line='L301', timeframe='1m', machine='Blower-Pump-1')
+        filename_15m = self.dataset_creator.main(start=self.starting_date, stop=self.ending_date, line='L301', timeframe='15m', machine='Blower-Pump-1')
 
-        # produce raw data to the raw-data topic
-        self.raw_data_producer = SimpleProducer(topic='raw-data', data_filename=csv_filename)
-        self.raw_data_producer.main()
+        # produce raw data
+        self.producer.main(topic='raw-data', data_filename=filename_1m)
+        self.producer.main(topic='raw-data-15m', data_filename=filename_15m)
 
-        # wait for druid db to consume messages from raw-data topic
-        time.sleep(15)
+        # fetch raw data from druid
+        time.sleep(15)  # wait for druid to consume the raw data from kafka topics
+        df_1m = self.druid_fetcher.main(topic='raw-data')
+        df_15m = self.druid_fetcher.main(topic='raw-data-15m')
 
-        # fetch from druid raw-data
-        self.raw_druid_fetcher = DruidDataFetcher(topic='raw-data')
-        raw_df = self.raw_druid_fetcher.main()
+        # pre-process data
+        processed_df_1m = self.preprocesser.main(df=df_1m)
+        processed_df_15m = self.preprocesser.main(df=df_15m)
 
-        # pre-process
-        self.processor = DataPreprocessor(df=raw_df)
-        processed_df = self.processor.main()
+        # produce processed data
+        self.producer.main(topic='processed-data', df=processed_df_1m)
+        self.producer.main(topic='processed-data-15m', df=processed_df_15m)
 
-        # produce proccesed data to the processed-data topic
-        self.processed_data_producer = SimpleProducer(topic='processed-data', df=processed_df)
-        self.processed_data_producer.main()
+        # fetch processed data from druid
+        time.sleep(15)  # wait for druid to consume the processed data from kafka topics
+        df_1m = self.druid_fetcher.main(topic='processed-data')
+        df_15m = self.druid_fetcher.main(topic='processed-data-15m')
 
-        # wait for druid db to consume data from proccesed-data topic
-        time.sleep(15)
-
-        # fetch processed data from druid's processed data table
-        self.processed_druid_fetcher = DruidDataFetcher(topic='processed-data')
-        model_df = self.processed_druid_fetcher.main()
-
-        # run model
-        self.ml_model = Model(df=model_df)
-        model_results = self.ml_model.main()
+        # run lstm model
+        breakdown_probability_1m = self.lstm_model.main(df=df_1m, input_days=14, output_days=2, interval_minute=1)
+        breakdown_probability_15m = self.lstm_model.main(df=df_15m, input_days=90, output_days=10, interval_minute=15)
 
         # insert model results into postgre db
-        self.postgre_client = PostgreClient()
         self.postgre_client.create_table(table_name='results')
-        for result in model_results:
+        for result in [breakdown_probability_1m, breakdown_probability_15m]:
             self.postgre_client.insert_data(table_name='results', size=result['size'], model=result['model'], accuracy_score=result['score'])
+
+
+if __name__ == '__main__':
+    run_pipeline = RunPipeline()
+    run_pipeline.run()

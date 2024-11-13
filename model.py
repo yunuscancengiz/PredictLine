@@ -2,34 +2,34 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, GRU, Dense, Dropout
+from tensorflow.keras.layers import LSTM, Dense, Dropout
 from tensorflow.keras.callbacks import EarlyStopping
 
 
 class RNNModel:
-    def __init__(self, filename:str, input_days:int, output_days:int, interval_minute:int):
-        self.df = pd.read_csv(filename)
-        self.processed_df = self.preprocess(df=self.df)
-        self.input_steps = input_days * 24 * (60 / interval_minute)
-        self.output_steps = output_days * 24 * (60 / interval_minute)
-
-        # normalize data
-        self.input_columns = ['axialAxisRmsVibration', 'radialAxisKurtosis', 'radialAxisPeakAcceleration', 'radialAxisRmsAcceleration', 'radialAxisRmsVibration', 'temperature', 'is_running']
+    def __init__(self):
+        self.df = None
+        self.input_steps = None
+        self.output_steps = None
         self.scaler = MinMaxScaler()
-        self.scaled_df = self.scaler.fit_transform(self.processed_df[self.input_columns])
-
-        # Find the index of the target column
+        self.input_columns = ['axialAxisRmsVibration', 'radialAxisKurtosis', 'radialAxisPeakAcceleration', 'radialAxisRmsAcceleration', 'radialAxisRmsVibration', 'temperature', 'is_running']
         self.target_index = self.input_columns.index('axialAxisRmsVibration')
 
 
-    def main(self):
+    def main(self, df:pd.DataFrame, input_days:int, output_days:int, interval_minute:int):
+        self.df = df
+        self.scaled_df = self.scaler.fit_transform(self.df[self.input_columns])     # normalize data
+        self.input_steps, self.output_steps = (input_days * 24 * (60 / interval_minute)), (output_days * 24 * (60 / interval_minute))
+
         X, y = self.prepare_data(df=self.scaled_df)
         X_train, X_test, y_train, y_test = self.split_and_reshape(X=X, y=y)
-        lstm_loss = self.LSTM_Model(X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test)
-        print(lstm_loss)
+        lstm_loss, y_test = self.LSTM_Model(X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test)
+        breakdown_probability = self.calculate_breakdown_probability(y_test=y_test)
+        return breakdown_probability
 
 
     def preprocess(self, df):
+        # model takes processed data from druid. So this function is not going to be used in the main func.
         thresholds = {
             'axialAxisRmsVibration': 0.1,
             'radialAxisKurtosis': 3,
@@ -45,7 +45,6 @@ class RNNModel:
             'is_running'
         ] = 0
         return df
-
 
 
     def prepare_data(self, df:pd.DataFrame):
@@ -65,7 +64,7 @@ class RNNModel:
         X_train, X_test = X[:train_size], X[train_size:]
         y_train, y_test = y[:train_size], y[train_size:]
 
-        # Reshape input data to 3D for LSTM/GRU [samples, timesteps, features]
+        # Reshape input data to 3D for LSTM[samples, timesteps, features]
         X_train = X_train.reshape((X_train.shape[0], X_train.shape[1], len(self.input_columns)))
         X_test = X_test.reshape((X_test.shape[0], X_test.shape[1], len(self.input_columns)))
         return X_train, X_test, y_train, y_test
@@ -95,7 +94,15 @@ class RNNModel:
 
         # Evaluate models on test data
         lstm_loss = lstm_model.evaluate(X_test, y_test)
-        return lstm_loss
+        print(y_test)
+        print(type(y_test))
+        print(lstm_loss)
+        return lstm_loss, y_test
+    
+
+    def calculate_breakdown_probability(self, y_test):
+        breakdown_probability = None
+        return breakdown_probability
     
 
 if __name__ == '__main__':
