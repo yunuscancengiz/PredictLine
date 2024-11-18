@@ -24,12 +24,12 @@ class PrepareInitialData:
 
 
     def main(self):
-        filename_1m = self.prepare_datasets(start=self.starting_date_1m, stop=self.ending_date_1m, timeframe='1m')
-        filename_15m = self.prepare_datasets(start=self.starting_date_15m, stop=self.ending_date_15m, timeframe='15m')
-        self.produce_messages(topic='raw-data', filename=filename_1m) # produce 1m data to raw-data
-        self.produce_messages(topic='raw-data-15m', filename=filename_15m)  # produce 15m data raw-data-15m
-        time.sleep(15)  # wait for druid's data consuming process
-        input('After introducing the Kafka topics to Druid, press Enter.')
+        #filename_1m = self.prepare_datasets(start=self.starting_date_1m, stop=self.ending_date_1m, timeframe='1m')
+        #filename_15m = self.prepare_datasets(start=self.starting_date_15m, stop=self.ending_date_15m, timeframe='15m')
+        #self.produce_messages(topic='raw-data', filename=filename_1m) # produce 1m data to raw-data
+        #self.produce_messages(topic='raw-data-15m', filename=filename_15m)  # produce 15m data raw-data-15m
+        #time.sleep(15)  # wait for druid's data consuming process
+        #input('After introducing the Kafka topics to Druid, press Enter.')
         df_1m = self.fecth_druid_data(topic='raw-data')     # fetch 1m data from druid raw-data topic
         df_15m = self.fecth_druid_data(topic='raw-data-15m') # fetch 15m data from druid raw-data-15m topic
         processed_df_1m = self.process_data(df=df_1m)   # process 1m data
@@ -46,7 +46,7 @@ class PrepareInitialData:
     def produce_messages(self, topic:str, filename=None, df=None):
         if filename != None:
             self.producer.main(topic=topic, data_filename=filename)
-        elif df != None:
+        elif df is not None:
             self.producer.main(topic=topic, df=df)
         else:
             self.logger.warning(msg='Datasource is not valid!')
