@@ -2,7 +2,6 @@ pandas
 numpy
 python-dotenv
 influxdb-client
-logging
 confluent-kafka
 scikit-learn
 statsmodels
