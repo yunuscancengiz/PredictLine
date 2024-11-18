@@ -53,6 +53,9 @@ class SimpleProducer:
             
             self.messages = pd.read_csv(self.data_filename)
 
+        if '__time' in self.messages.columns:
+            self.messages.rename(columns={'__time': 'time'}, inplace=True)
+
 
     def delivery_report(self, err, msg):
         if err is not None:
