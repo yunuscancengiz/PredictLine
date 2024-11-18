@@ -43,7 +43,7 @@ class SimpleProducer:
 
 
     def prepare_messages(self):
-        if self.df != None:
+        if self.df is not None:
             self.messages = self.df
         else:
             if self.data_filename == None:
