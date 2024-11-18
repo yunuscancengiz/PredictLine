@@ -32,6 +32,10 @@ class PrepareInitialData:
         #input('After introducing the Kafka topics to Druid, press Enter.')
         df_1m = self.fecth_druid_data(topic='raw-data')     # fetch 1m data from druid raw-data topic
         df_15m = self.fecth_druid_data(topic='raw-data-15m') # fetch 15m data from druid raw-data-15m topic
+
+        print(df_1m.head())
+        time.sleep(10)
+        
         processed_df_1m = self.process_data(df=df_1m)   # process 1m data
         processed_df_15m = self.process_data(df=df_15m) # process 15m data
         self.produce_messages(topic='processed-data', df=processed_df_1m)   # send processed 1m data to processed-data 
