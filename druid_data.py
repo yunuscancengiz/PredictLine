@@ -1,4 +1,3 @@
-from pydruid.client import PyDruid
 import requests
 import json
 import os

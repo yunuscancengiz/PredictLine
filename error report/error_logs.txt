@@ -1,0 +1,241 @@
+#L301vp18+
+#vp15-
+#noise
+The vacuum value cannot reach 2024-07-27 23:22:34
+
+#L301vp4+
+#vp9-
+#vacuum value cannot reach
+The vaccum value cannot reach 2024-06-17 10:11:59
+
+#L302 vp7+
+#vp8-
+#vacuum value cannot reach
+the vacuum value cannot reach , the blades sticked 2024-05-28 09:37:11
+
+#L301vp9+
+#vp13-
+#value cannot reach
+#the blades sticked
+The vacuum value cannot reach , the blades are sticked 2024-05-18 10:29:45
+
+#L302 vp6+
+#vp9-
+#value cannot reach
+#the blades sticked
+The vacuum value cannot reach 2024-05-10 22:16:03
+
+#L303vp15+
+#vp6-
+#the vacuum value cannot reach
+The blades sticked ,vacuum value cannot reach 2024-04-27 15:03:18
+
+#L303vp6+
+#vp1-
+#the blades sticked
+#vacuum value cannot reach
+the vacuum value cannot reach, the pump have noise2024-04-10 00:25:26
+
+#L301vp9+
+#vp15-
+#value cannot reach
+#noise
+the blades sticked , the vacuum value cannot reach2024-03-18 13:32:10
+
+#L303vp6+
+#vp9-
+#blades sticked
+#vacuum value cannot reach
+The vacuum had noise , the vacuum time increase 2024-03-07 09:29:06
+
+#L302vp13+
+#vp15-
+#noise
+#time increase
+The blades are sticked , the vacuum value cannot reach 2024-03-04 09:33:01
+
+#L301vp2+
+#vp13-
+#blades are sticked
+#value cannot reach
+the vacuum value cannot reach , the pump had noise 2024-02-21 02:19:52
+
+#L302vp15+
+#vp2-
+#value cannot reach
+#noise
+the vacuum value cannot reach , the blades sticked 2024-01-14 14:41:00
+
+#L302vp15+
+#vp6-
+#vacuum value cannot reach
+#the blades sticked
+the oil is leakage , the vacuum value cannot reach2024-01-14 14:31:51
+
+#L303vp2+
+#vp3-
+#the oil is leakage
+#vacuum value cannot reach
+The blades are sticked , the vacuum value cannot reach 2023-12-18 12:54:39
+
+#L302 vp15+
+#vp6-
+#the blades sticked
+#the value can not reach
+The vacuum time increase and have noise 2023-12-01 10:40:13
+
+#L302vp6+
+#vp3-
+#vacuum time increase
+#noise
+The vacuum value cannot reach 2023-11-04 00:47:13
+
+#L302vp3-
+#vp3+
+#the vacuum value cannot reach
+the power of vacuum pump 3 is low , change the battery 2023-11-01 14:59:52
+
+#change the battery
+#the value is 0
+the oil leakage , the vacuum value cannot reach2023-10-23 13:23:09
+
+#L301vp15-
+#vp2+
+#oil leakage
+#vacuum value cannot reach
+the blades are sticked , the vacuum value cannot reach2023-09-18 08:53:52
+
+#L301vp3+
+#vp3-
+#blades sticked
+#vacuum value cannot reach
+The vacuum value cannot reach , the oil leakage 2023-09-11 18:15:43
+
+#L302vp15+
+#vp2-
+#value cannot reach
+#oil leakage
+The vacuum value cannot reach 2023-09-07 16:06:01
+
+#L301VP13+
+#vp15-
+#value cannot reach
+The blades sticked , the vacuum value cannot reach , high current 2023-09-07 08:56:56
+
+#L301vp10+
+#vp13-
+#blades sticked
+#high current
+The blades are sticked , the vacuum value cannot reach 2023-08-27 12:12:31
+
+#L301VP13+
+#vp6-
+#value cannot reach
+#blades sticked
+The vacuum value cannot reach , the blades sticked 2023-08-17 02:23:22
+
+#L301 vp15+
+#vp13-
+#vacuum value cannot reach
+#the blades sticked
+The vacuum value cannot reach, the pump has noise 2023-08-16 08:17:02
+
+#L301vp1+
+#vp6-
+#value cannot reach
+#noise
+The blades sticked , the vacuum value can not reach 2023-07-24 11:09:02
+
+#01+
+#15-
+#the blades sticked
+#value issue
+The vacuum value can not reach and have noise 2023-07-09 23:48:27
+
+#301vp13+
+#vp1+
+#vacuum value problem
+#nosie
+The vacuum value can not reach , the blades are sticked 2023-07-07 10:57:06
+
+#301vp2+
+#vp15-
+#the blades sticked
+#the value cannot reach
+The power of battery run out2023-05-21 03:26:03
+
+#change the battey
+the pump have noise , the blades are blocked2023-04-07 12:43:57
+
+#16-
+#10+
+#noise
+The vacuum value can not reach ， change the Hardener vacuum pump2023-03-24 02:48:39
+
+#04+
+#08-
+#the vacuum value cannot reach
+The vacuum time increase , the blade is sticked 2023-03-21 12:28:03
+
+#301vp13+
+#vp6-
+#vacuum time increase
+#the blades sticked
+the vacuum time increase and have noise 2023-02-23 09:49:03
+
+#301vp16-
+#vp1+
+#noise
+#vacuum time
+The vacuum pump 2 has noise and the vacuum time increase 2023-02-10 09:09:08
+
+#301vp6+
+#vp1-
+#noise
+the temperature is high , the maintenance team change the oil of blower pump 3 and clean the aspiration pipe 2023-02-04 12:41:02
+
+the battery of Banner DX80N has run out of power2023-01-30 09:59:04
+
+the vacuum value cannot reach , the blades sticked 2022-10-10 08:44:14
+
+#301vp7+
+#301vp2-
+#the vacuum cannot reach
+the pump had noise , the vacuum value cannot reach 2022-09-21 08:23:45
+
+#301vp16-
+#301vp10+
+#noise
+#vacuum value problem
+change vacuum pomp 3 for node 4, blades are sticked 2022-09-02 13:55:08
+
+#the vacuum value cannot reach
+#301vp3
+#6-
+#16+
+DX80N do not work for resin vacuum pump ,restart tej DX80n and work 2022-08-10 09:08:17
+
+#301vp16-
+#301vp02+
+#noise
+#the value can not reach
+the vacuum value can not reach , change the vacuum pump #2 , the pump2 oil leakage 2022-07-14 02:01:03
+
+#301vp2-
+#301vp19+
+#oil leakage
+#the vacuum value cannot reach
+the vacuum value cannot reach , the vacuum pump blades stick 2022-07-05 10:48:21
+
+#vacuum value problem
+#noise
+#301vp3
+#01-
+#16+
+the vacuum value can not reach , the blades are sticked2022-07-05 10:48:03
+
+#noise
+#vacuum value problem
+#301vp3
+#01-
+#16+

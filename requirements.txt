@@ -1,0 +1,12 @@
+pandas
+numpy
+python-dotenv
+influxdb-client
+logging
+confluent-kafka
+scikit-learn
+statsmodels
+matplotlib
+seaborn
+tensorflow
+psycopg2
