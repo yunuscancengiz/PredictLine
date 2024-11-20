@@ -48,8 +48,8 @@ class SimpleProducer:
         else:
             if self.data_filename == None:
                 # fetch messages
-                dataset_creator = DatasetCreator(start='-1d', stop='now()', line='L301', machine='Blower-Pump-1', timeframe='15m')
-                self.data_filename = dataset_creator.main()
+                dataset_creator = DatasetCreator()
+                self.data_filename = dataset_creator.main(start='-1d', stop='now()', line='L301', machine='Blower-Pump-1', timeframe='15m')
             
             self.messages = pd.read_csv(self.data_filename)
 
