@@ -72,5 +72,5 @@ class SimpleConsumer:
 
 
 if __name__ == '__main__':
-    simple_consumer = SimpleConsumer()
+    simple_consumer = SimpleConsumer(influx_bucket='test')
     simple_consumer.main(topic='raw-data')
