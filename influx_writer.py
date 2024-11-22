@@ -34,7 +34,7 @@ class InfluxWriter:
                 .field('radialAxisKurtosis', data['radialAxisKurtosis'])
                 .field('radialAxisPeakAcceleration', data['radialAxisPeakAcceleration'])
                 .field('radialAxisRmsAcceleration', data['radialAxisRmsAcceleration'])
-                .filed('radialAxisRmsVibration', data['radialAxisRmsVibration'])
+                .field('radialAxisRmsVibration', data['radialAxisRmsVibration'])
                 .field('temperture', data['temperature'])
             )
             self.write_api.write(bucket=self.bucket, org=self.organization, record=point)
