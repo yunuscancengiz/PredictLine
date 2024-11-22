@@ -1,56 +1,48 @@
-import influxdb_client
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 from dotenv import load_dotenv
+from _logger import ProjectLogger
+import traceback
 import os
 import time
 
+class InfluxWriter:
+    load_dotenv()
+    TOKEN = os.getenv('MY_INFLUX_TOKEN')
+    logger = ProjectLogger(class_name='InfluxWriter').create_logger()
 
-load_dotenv()
+    def __init__(self, token:str, url:str, organization:str):
+        self.token = token
+        self.url = url
+        self.organization = organization
+        self.bucket = None
 
-token = os.getenv('MY_INFLUX_TOKEN2')
-org = "NISO"
-url = "http://34.41.194.149:8086"
-bucket="sensor-data"
-
-client = influxdb_client.InfluxDBClient(url=url, token=token, org=org)
-
-
-# WRITE
-'''write_api = client.write_api(write_options=SYNCHRONOUS)
-   
-for value in range(5):
-  point = (
-    Point("measurement1")
-    .tag("tagname1", "tagvalue1")
-    .field("field1", value)
-  )
-  write_api.write(bucket=bucket, org="NISO", record=point)
-  time.sleep(1) # separate points by 1 second'''
+        self.client = InfluxDBClient(url=self.url, token=self.token, org=self.organization)
+        self.write_api = self.client.write_api(write_options=SYNCHRONOUS)
+        self.logger.info(msg='Influx DB writer api client successfuly created!')
 
 
-# QUERY
-query_api = client.query_api()
+    def write_into_influxdb(self, bucket:str, data:dict):
+        try:
+            self.bucket = bucket
+            point = (
+                Point(measurement_name='sensor_data')
+                .tag('topic', bucket)
+                .field('machine', data['machine'])
+                .field('time', data['time'])
+                .field('axialAxisRmsVibration', data['axialAxisRmsVibration'])
+                .field('radialAxisKurtosis', data['radialAxisKurtosis'])
+                .field('radialAxisPeakAcceleration', data['radialAxisPeakAcceleration'])
+                .field('radialAxisRmsAcceleration', data['radialAxisRmsAcceleration'])
+                .filed('radialAxisRmsVibration', data['radialAxisRmsVibration'])
+                .field('temperture', data['temperature'])
+            )
+            self.write_api.write(bucket=self.bucket, org=self.organization, record=point)
+            self.logger.info(msg=f'Data uploaded successfuly into {self.bucket} named Influx DB bucket.')
+        except Exception as e:
+            self.logger.error(msg=f'Exception happened while writing into {self.bucket} named Influx DB bucket!')
+            self.logger.error(msg=traceback.format_exc())
 
-query = """from(bucket: "sensor-data")
- |> range(start: -10m)
- |> filter(fn: (r) => r._measurement == "measurement1")"""
-tables = query_api.query(query, org="NISO")
 
-for table in tables:
-  for record in table.records:
-    print(record)
-
-
-# MEAN FUNC
-'''query_api = client.query_api()
-
-query = """from(bucket: "sensor-data")
-  |> range(start: -10m)
-  |> filter(fn: (r) => r._measurement == "measurement1")
-  |> mean()"""
-tables = query_api.query(query, org="NISO")
-
-for table in tables:
-    for record in table.records:
-        print(record)'''
+    def close_connection(self):
+        self.client.close()
