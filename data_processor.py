@@ -20,7 +20,7 @@ class DataPreprocessor:
         try:
             self.df = df
             self.process()
-            self.logger.info('Data pre-processed successfuly!')
+            self.logger.info('Data pre-processed successfully!')
             return self.df
         except Exception as e:
             self.logger.error(msg='Exception happened while pre-processing the data!')

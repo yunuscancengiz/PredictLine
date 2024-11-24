@@ -24,7 +24,7 @@ class DruidCleaner:
         try:
             payload = self.create_payload()
             self.clean(payload=payload)
-            self.logger.info(msg=f'Old data cleaned from {self.datasource} named datasource successfuly.')
+            self.logger.info(msg=f'Old data cleaned from {self.datasource} named datasource successfully.')
         except Exception as e:
             self.logger.error(msg=f'Exception happened while cleaning old data from {self.datasource} named datasource!')
             self.logger.error(msg=traceback.format_exc())

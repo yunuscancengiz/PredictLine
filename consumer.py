@@ -16,9 +16,9 @@ class SimpleConsumer:
     SERVER_IP = os.getenv('GCP_IP')
     logger = ProjectLogger(class_name='SimpleConsumer').create_logger()
 
-    def __init__(self, influx_bucket:str) -> None:
+    def __init__(self) -> None:
         self.topic = None
-        self.influx_bucket = influx_bucket
+        self.influx_bucket = None
         self.influx_db_client = InfluxWriter(token=self.TOKEN, url=self.INFLUX_URL, organization=self.INFLUX_ORG)
 
         # create consumer config
@@ -32,9 +32,10 @@ class SimpleConsumer:
         self.consumer = Consumer(self.consumer_config)
 
 
-    def main(self, topic:str):
+    def main(self, topics:list, influx_bucket:str):
         try:
-            self.topic = topic
+            self.topics = topics
+            self.influx_bucket = influx_bucket
             self.consume_messages()
         except Exception as e:
             self.logger.error(msg=f'Exception happened in main function, error: {e}')
@@ -48,7 +49,7 @@ class SimpleConsumer:
 
 
     def consume_messages(self):
-        self.consumer.subscribe(topics=[self.topic])
+        self.consumer.subscribe(topics=[self.topics])
         while True:
             try:
                 msg = self.consumer.poll(1.0)
@@ -73,4 +74,4 @@ class SimpleConsumer:
 
 if __name__ == '__main__':
     simple_consumer = SimpleConsumer(influx_bucket='test')
-    simple_consumer.main(topic='raw-data')
+    simple_consumer.main(topics=['raw-data', 'raw-data-15m', 'predicted-data', 'predicted-data-15m'])

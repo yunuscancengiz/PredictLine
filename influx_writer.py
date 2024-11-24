@@ -19,7 +19,7 @@ class InfluxWriter:
 
         self.client = InfluxDBClient(url=self.url, token=self.token, org=self.organization)
         self.write_api = self.client.write_api(write_options=SYNCHRONOUS)
-        self.logger.info(msg='Influx DB writer api client successfuly created!')
+        self.logger.info(msg='Influx DB writer api client successfully created!')
 
 
     def write_into_influxdb(self, bucket:str, data:dict):
@@ -38,7 +38,7 @@ class InfluxWriter:
                 .field('temperture', float(data['temperature']))
             )
             self.write_api.write(bucket=self.bucket, org=self.organization, record=point)
-            self.logger.info(msg=f'Data uploaded successfuly into {self.bucket} named Influx DB bucket.')
+            self.logger.info(msg=f'Data uploaded successfully into {self.bucket} named Influx DB bucket.')
         except Exception as e:
             self.logger.error(msg=f'Exception happened while writing into {self.bucket} named Influx DB bucket!')
             self.logger.error(msg=traceback.format_exc())

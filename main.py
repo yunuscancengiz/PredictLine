@@ -4,11 +4,18 @@ from data_processor import DataPreprocessor
 from druid_data import DruidDataFetcher
 from model import RNNModel
 from postgre_db import PostgreClient
+from consumer import SimpleConsumer
 import time
 from datetime import datetime, timedelta
+import threading
+from _logger import ProjectLogger
+import traceback
 
 
 class RunPipeline:
+    logger = ProjectLogger(class_name='RunPipeline').create_logger()
+
+
     def __init__(self):
         self.dataset_creator = DatasetCreator()
         self.producer = SimpleProducer()
@@ -17,22 +24,44 @@ class RunPipeline:
         self.lstm_model = RNNModel()
         self.postgre_client = PostgreClient()
 
+        # create postgre tables
+        self.postgre_client.create_table(table_name='model_results_1m')
+        self.postgre_client.create_table(table_name='model_results_15m')
+
         self.starting_date = None
         self.ending_date = None
+        self.consumers = []
 
 
     def run(self):
+        self.start_consumers()
         while True:
-            now = datetime.now()
-            if now.hour == 3 and now.minute == 22:
-                self.pipeline()
+            try:
+                now = datetime.now()
+                if now.hour == 3 and now.minute == 22:
+                    self.pipeline()
 
-            # sleep until next midnight
-            tomorrow = datetime.now() + timedelta(days=1)
-            next_midnight = datetime.combine(tomorrow.date(), datetime.min.time())
-            sleep_seconds = (next_midnight - datetime.now()).total_seconds()
-            print(sleep_seconds)
-            time.sleep(sleep_seconds)
+                # sleep until next midnight
+                tomorrow = datetime.now() + timedelta(days=1)
+                next_midnight = datetime.combine(tomorrow.date(), datetime.min.time())
+                sleep_seconds = (next_midnight - datetime.now()).total_seconds()
+                self.logger.info(msg=f'Pipeline ran successfully! The program will sleep until {next_midnight}.')
+                time.sleep(sleep_seconds)
+            except KeyboardInterrupt:
+                raise
+            except Exception as e:
+                self.logger.error(msg='Exception happened while running the main pipeline!')
+                self.logger.error(traceback.format_exc())
+
+
+    def start_consumers(self):
+        topics = ['raw-data', 'raw-data-15m', 'processed-data', 'processed-data-15m']
+        for topic in topics:
+            consumer = SimpleConsumer()
+            thread = threading.Thread(target=consumer.main, args=(topic, topic))
+            thread.daemon = True
+            self.consumers.append(thread)
+            thread.start()
 
 
     def pipeline(self):
@@ -67,13 +96,17 @@ class RunPipeline:
         df_15m = self.druid_fetcher.main(topic='processed-data-15m')
 
         # run lstm model
-        breakdown_probability_1m = self.lstm_model.main(df=df_1m, input_days=14, output_days=2, interval_minute=1)
-        breakdown_probability_15m = self.lstm_model.main(df=df_15m, input_days=90, output_days=10, interval_minute=15)
+        results_1m, predicted_data_1m = self.lstm_model.main(df=df_1m, input_days=14, output_days=2, interval_minute=1)
+        results_15m, predicted_data_15m = self.lstm_model.main(df=df_15m, input_days=90, output_days=10, interval_minute=15)
+
+        # produce predicted data 
+        self.producer.main(topic='predicted-data', df=predicted_data_1m)
+        self.producer.main(topic='predicted-data-15m', df=predicted_data_15m)
 
         # insert model results into postgre db
-        self.postgre_client.create_table(table_name='results')
-        for result in [breakdown_probability_1m, breakdown_probability_15m]:
-            self.postgre_client.insert_data(table_name='results', size=result['size'], model=result['model'], accuracy_score=result['score'])
+        self.postgre_client.insert_data(table_name='model_results_1m', results=results_1m)
+        self.postgre_client.insert_data(table_name='model_results_15m', results=results_15m)
+        
 
 
 if __name__ == '__main__':

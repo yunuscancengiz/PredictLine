@@ -27,23 +27,52 @@ class PostgreClient:
 
     def create_table(self, table_name:str):
         try:
-            query = f'''CREATE TABLE IF NOT EXISTS {table_name}(id SERIAL PRIMARY KEY, size INT NOT NULL, model TEXT NOT NULL, accuracy_score DECIMAL NOT NULL);'''
-            self.cursor.execute(query=query)
-            self.db_client.commit()
-            self.logger.info(msg=f'{table_name} named table already exists or created successfuly.')
+            query = f'''
+                CREATE TABLE IF NOT EXISTS {table_name}(
+                    id SERIAL PRIMARY KEY,
+                    timestamp TIMESTAMP NOT NULL,
+                    lstm_loss FLOAT NOT NULL,
+                    accuracy FLOAT NOT NULL,
+                    f1_score FLOAT NOT NULL,
+                    precision FLOAT NOT NULL,
+                    recall FLOAT NOT NULL,
+                    breakdown_probability FLOAT NOT NULL,
+                    created_at TIMESTAMP DEFAULT NOW()
+                );
+            '''
+            
+            # self.db_client.commit()
+            with self.db_client:
+                self.cursor.execute(query=query)
+                self.logger.info(msg=f'{table_name} named table already exists or created successfully.')
         except Exception as e:
             self.logger.error(msg=f'Exception happened while creating {table_name} named table, Error: {e}')
-            self.logger.error(msg=f'{str(traceback.format_exc(e))}')
+            self.logger.error(msg=traceback.format_exc())
 
 
-    def insert_data(self, table_name:str, size:int, model:str, accuracy_score:float):
+    def insert_data(self, table_name:str, results:dict):
         try:
-            query = f'''INSERT INTO {table_name}(size, model, accuracy_score) VALUES({size}, '{model}', {accuracy_score});'''
-            self.cursor.execute(query=query)
-            self.db_client.commit()
+            query = f'''
+                INSERT INTO {table_name} (
+                    timestamp, lstm_loss, accuracy, f1_score, precision, recall, breakdown_probability
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s);
+            '''
+            values = (
+                results["timestamp"],
+                results["lstm_loss"],
+                results["accuracy"],
+                results["f1_score"],
+                results["precision"],
+                results["recall"],
+                results["breakdown_probability"]
+            )
+
+            with self.db_client:
+                self.cursor.execute(query, values)
+                self.logger.info(msg=f'Data successfully inserted into {table_name}.')
         except Exception as e:
-            self.logger.error(msg=f'Exception happened while inserting the data, Error: {e}')
-            self.logger.error(msg=f'{str(traceback.format_exc(e))}')
+            self.logger.error(msg=f'Exception happened while inserting the data into {table_name}, Error: {e}')
+            self.logger.error(msg=traceback.format_exc())
 
 
     def fetch_data(self, table_name:str):
@@ -58,10 +87,10 @@ class PostgreClient:
             query = f'UPDATE {table_name} SET {column_name}={new_value} WHERE id={_id};'
             self.cursor.execute(query=query)
             self.db_client.commit()
-            self.logger.info(msg='Data updated successfuly!')
+            self.logger.info(msg='Data updated successfully!')
         except Exception as e:
             self.logger.error(msg=f'Exception happened while updating the data, Error: {e}')
-            self.logger.error(msg=f'{str(traceback.format_exc(e))}')
+            self.logger.error(msg=traceback.format_exc())
 
 
     def delete_data(self, table_name:str, _id:int):
@@ -69,10 +98,10 @@ class PostgreClient:
             query = f'DELETE FROM {table_name} WHERE id={_id};'
             self.cursor.execute(query=query)
             self.db_client.commit()
-            self.logger.info(msg='Data successfuly deleted!')
+            self.logger.info(msg='Data successfully deleted!')
         except Exception as e:
             self.logger.error(msg=f'Exception happened while deleting the data, Error: {e}')
-            self.logger.error(msg=f'{str(traceback.format_exc(e))}')
+            self.logger.error(msg=traceback.format_exc())
 
 
 if __name__ == '__main__':

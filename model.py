@@ -1,16 +1,30 @@
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout
 from tensorflow.keras.callbacks import EarlyStopping
+from datetime import datetime
+from _logger import ProjectLogger
+import traceback
 
 
 class RNNModel:
+    logger = ProjectLogger(class_name='RNNModel').create_logger()
+    thresholds = {
+        'axialAxisRmsVibration': 0.1,
+        'radialAxisKurtosis': 3,
+        'radialAxisPeakAcceleration': 0.05,
+        'radialAxisRmsAcceleration': 0.01
+    }
+
+
     def __init__(self):
         self.df = None
         self.input_steps = None
         self.output_steps = None
+        self.start_time = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
         self.scaler = MinMaxScaler()
         self.input_columns = ['axialAxisRmsVibration', 'radialAxisKurtosis', 'radialAxisPeakAcceleration', 'radialAxisRmsAcceleration', 'radialAxisRmsVibration', 'temperature', 'is_running']
         self.target_index = self.input_columns.index('axialAxisRmsVibration')
@@ -23,25 +37,24 @@ class RNNModel:
 
         X, y = self.prepare_data(df=self.scaled_df)
         X_train, X_test, y_train, y_test = self.split_and_reshape(X=X, y=y)
-        lstm_loss, y_test = self.LSTM_Model(X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test)
-        breakdown_probability = self.calculate_breakdown_probability(y_test=y_test)
-        return breakdown_probability
+        X_test, y_test, y_pred, lstm_loss = self.LSTM_Model(X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test)
+        breakdown_probability = self.calculate_breakdown_probability(y_pred=y_pred)
+        results = self.calculate_model_performance(y_test=y_test, y_pred=y_pred)
+        results['lstm loss'] = lstm_loss
+        results['breakdown probability'] = breakdown_probability
+        results['timestamp'] = datetime.now().replace(second=0, microsecond=0)
+        predicted_data = self.add_time_column_to_predicted_values(y_pred=y_pred, interval_minute=interval_minute)
+        return results, predicted_data
 
 
     def preprocess(self, df):
         # model takes processed data from druid. So this function is not going to be used in the main func.
-        thresholds = {
-            'axialAxisRmsVibration': 0.1,
-            'radialAxisKurtosis': 3,
-            'radialAxisPeakAcceleration': 0.05,
-            'radialAxisRmsAcceleration': 0.01
-        }
         df['is_running'] = 1
         df.loc[
-            (df['axialAxisRmsVibration'] < thresholds['axialAxisRmsVibration']) & 
-            (df['radialAxisKurtosis'] < thresholds['radialAxisKurtosis']) & 
-            (df['radialAxisPeakAcceleration'] < thresholds['radialAxisPeakAcceleration']) & 
-            (df['radialAxisRmsAcceleration'] < thresholds['radialAxisRmsAcceleration']),
+            (df['axialAxisRmsVibration'] < self.thresholds['axialAxisRmsVibration']) & 
+            (df['radialAxisKurtosis'] < self.thresholds['radialAxisKurtosis']) & 
+            (df['radialAxisPeakAcceleration'] < self.thresholds['radialAxisPeakAcceleration']) & 
+            (df['radialAxisRmsAcceleration'] < self.thresholds['radialAxisRmsAcceleration']),
             'is_running'
         ] = 0
         return df
@@ -59,7 +72,6 @@ class RNNModel:
     
 
     def split_and_reshape(self, X, y):
-        # Split the data into training and testing sets
         train_size = int(len(X) * 0.8)
         X_train, X_test = X[:train_size], X[train_size:]
         y_train, y_test = y[:train_size], y[train_size:]
@@ -92,17 +104,57 @@ class RNNModel:
             callbacks=[early_stopping]
         )
 
-        # Evaluate models on test data
         lstm_loss = lstm_model.evaluate(X_test, y_test)
-        print(y_test)
-        print(type(y_test))
-        print(lstm_loss)
-        return lstm_loss, y_test
+        y_pred = lstm_model.predict(X_test)
+        return X_test, y_test, y_pred, lstm_loss
     
 
-    def calculate_breakdown_probability(self, y_test):
-        breakdown_probability = None
+    def calculate_breakdown_probability(self, y_pred, column:str):
+        try:
+            if len(y_pred) == 0:
+                self.logger.warning(msg='Breakdown probability can not calculated because y_test is an empty list!')
+                return 0
+        
+            threshold = self.thresholds[column]
+            number_of_breakdowns = sum(value < threshold for value in y_pred)
+            breakdown_probability = round(float((number_of_breakdowns * 100) / len(y_pred)), 2)
+            self.logger.info(msg=f'Breakdown probability calculated as {breakdown_probability}%')
+        except Exception as e:
+            self.logger.error(msg=f'Exception happened while calculating breakdown probability!')
+            self.logger.error(msg=traceback.format_exc())
         return breakdown_probability
+    
+
+    def add_time_column_to_predicted_values(self, y_pred, interval_minute):
+        try:
+            timestamps = pd.date_range(start=self.start_time, periods=len(y_pred), freq=f'{interval_minute}T')
+            predicted_data = pd.DataFrame({
+                'time': timestamps,
+                'PredictedAxialAxisRmsVibration': y_pred
+            })
+        except Exception as e:
+            self.logger.error(msg='Exception happened while adding time column to the predicted values!')
+            self.logger.error(msg=traceback.format_exc())
+        return predicted_data
+    
+
+    def calculate_model_performance(self, y_test, y_pred):
+        y_pred_binary = np.round(y_pred).flatten()
+        y_test_binary = np.round(y_test).flatten()
+
+        accuracy = accuracy_score(y_test_binary, y_pred_binary)
+        f1 = f1_score(y_test_binary, y_pred_binary)
+        precision = precision_score(y_test_binary, y_pred_binary)
+        recall = recall_score(y_test_binary, y_pred_binary)
+
+        metrics = {
+            'accuracy score': accuracy,
+            'f1 score': f1,
+            'precision': precision,
+            'recall': recall
+        }
+        return metrics
+
     
 
 if __name__ == '__main__':

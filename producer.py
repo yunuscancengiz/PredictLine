@@ -61,7 +61,7 @@ class SimpleProducer:
         if err is not None:
             self.logger.warning(msg=f'Delivery failed for {msg.key()}, error: {err}')
             return
-        self.logger.info(msg=f'Record: {msg.key()} successfuly produced to topic: {msg.topic()} partition: [{msg.partition()}] at offset: {msg.offset()}')
+        self.logger.info(msg=f'Record: {msg.key()} successfully produced to topic: {msg.topic()} partition: [{msg.partition()}] at offset: {msg.offset()}')
 
 
     def serialize_data(self, index:int):

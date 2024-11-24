@@ -37,7 +37,7 @@ class DruidDataFetcher:
         headers = {'Content-Type': 'application/json'}
         response = requests.post(self.url, headers=headers, data=payload)
         if response.status_code == 200:
-            self.logger.info(msg=f'Data successfuly fetched from {self.topic} named table!')
+            self.logger.info(msg=f'Data successfully fetched from {self.topic} named table!')
             data = response.json()
             return data
 

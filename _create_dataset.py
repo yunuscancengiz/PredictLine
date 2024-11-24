@@ -123,3 +123,14 @@ if __name__ == '__main__':
         line='L302'
     )
     dataset_creator.main_multiple()
+
+
+
+""" 
+from (bucket: "test")
+|> range(start: -2d, stop: now())
+|> filter(fn: (r) => r["_measurement"] == "sensor_data")
+|> filter(fn: (r) => r["_field"] == "axialAxisRmsVibration" or r["_field"] == "radialAxisKurtosis" or r["_field"] == "radialAxisPeakAcceleration" or r["_field"] == "radialAxisRmsAcceleration" or r["_field"] == "radialAxisRmsVibration" or r["_field"] == "temperature")
+|> aggregateWindow(every: 15m, fn: last, createEmpty: false)
+|> yield(name: "last")
+"""
