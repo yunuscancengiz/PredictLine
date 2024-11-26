@@ -32,8 +32,8 @@ class RunPipeline:
         self.ending_date = None
         self.consumers = []
 
-        self.starting_hour = 4
-        self.starting_minute = 46
+        self.starting_hour = 1
+        self.starting_minute = 52
 
 
     def run(self):
@@ -53,12 +53,8 @@ class RunPipeline:
                 else:
                     starting_time = datetime.combine(datetime.now().date(), time(self.starting_hour, self.starting_minute))
                     sleep_seconds = max((starting_time - datetime.now()).total_seconds(), 0)
-
-                    self.logger.info(msg=f'{sleep_seconds} sn')
-
                     self.logger.info(msg=f'The program will sleep until {starting_time}.')
                     t.sleep(sleep_seconds)
-                    self.logger.info(msg='EHEHEHEHEHEHEHE')
             except KeyboardInterrupt:
                 raise
             except Exception as e:
