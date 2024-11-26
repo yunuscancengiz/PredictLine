@@ -33,7 +33,7 @@ class RunPipeline:
         self.consumers = []
 
         self.starting_hour = 4
-        self.starting_minute = 42
+        self.starting_minute = 46
 
 
     def run(self):
@@ -47,12 +47,15 @@ class RunPipeline:
                     # sleep until next midnight
                     tomorrow = datetime.now() + timedelta(days=1)
                     next_midnight = datetime.combine(tomorrow.date(), datetime.min.time())
-                    sleep_seconds = (next_midnight - datetime.now()).total_seconds()
+                    sleep_seconds = max((next_midnight - datetime.now()).total_seconds(), 0)
                     self.logger.info(msg=f'Pipeline ran successfully! The program will sleep until {next_midnight}.')
                     t.sleep(sleep_seconds)
                 else:
                     starting_time = datetime.combine(datetime.now().date(), time(self.starting_hour, self.starting_minute))
                     sleep_seconds = max((starting_time - datetime.now()).total_seconds(), 0)
+
+                    self.logger.info(msg=f'{sleep_seconds} sn')
+
                     self.logger.info(msg=f'The program will sleep until {starting_time}.')
                     t.sleep(sleep_seconds)
                     self.logger.info(msg='EHEHEHEHEHEHEHE')
