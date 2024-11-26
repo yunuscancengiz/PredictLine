@@ -34,7 +34,7 @@ class SimpleProducer:
             # create producer object using config dict
             self.producer  = Producer(self.producer_config)
 
-            self.produce_messages()
+            self.produce_messages(topic=topic)
         except Exception as e:
             self.logger.error(msg=f'Exception happened in main function, error: {e}')
             self.logger.error(msg=traceback.format_exc())
@@ -61,7 +61,7 @@ class SimpleProducer:
         if err is not None:
             self.logger.warning(msg=f'Delivery failed for {msg.key()}, error: {err}')
             return
-        self.logger.info(msg=f'Record: {msg.key()} successfully produced to topic: {msg.topic()} partition: [{msg.partition()}] at offset: {msg.offset()}')
+        #self.logger.info(msg=f'Record: {msg.key()} successfully produced to topic: {msg.topic()} partition: [{msg.partition()}] at offset: {msg.offset()}')
 
 
     def serialize_data(self, index:int):
@@ -80,7 +80,8 @@ class SimpleProducer:
         return key, value
     
 
-    def produce_messages(self):
+    def produce_messages(self, topic:str):
+        self.logger.info(msg=f'Messages are going to produce to the {topic} named topic.')
         for index in range(len(self.messages)):
             try:
                 msg_key, msg_value = self.serialize_data(index=index)
@@ -92,6 +93,7 @@ class SimpleProducer:
                 self.logger.error(msg=traceback.format_exc())
             except KeyboardInterrupt:
                 raise
+        self.logger.info(msg=f'Messages successfully produced to the {topic} named topic!')
         self.producer.flush()
         time.sleep(3)
 

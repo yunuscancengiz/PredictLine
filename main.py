@@ -33,7 +33,7 @@ class RunPipeline:
         self.consumers = []
 
         self.starting_hour = 2
-        self.starting_minute = 17
+        self.starting_minute = 33
 
 
     def run(self):
@@ -53,7 +53,7 @@ class RunPipeline:
                     self.logger.info(msg=f'Pipeline ran successfully! The program will sleep until {next_midnight}.')
                     t.sleep(sleep_seconds)
             except KeyboardInterrupt:
-                raise
+                break
             except Exception as e:
                 self.logger.error(msg='Exception happened while running the main pipeline!')
                 self.logger.error(traceback.format_exc())
