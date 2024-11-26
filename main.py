@@ -38,7 +38,7 @@ class RunPipeline:
         while True:
             try:
                 now = datetime.now()
-                if now.hour == 3 and now.minute == 22:
+                if now.hour == 4 and now.minute == 10:
                     self.pipeline()
 
                 # sleep until next midnight
@@ -55,7 +55,7 @@ class RunPipeline:
 
 
     def start_consumers(self):
-        topics = ['raw-data', 'raw-data-15m', 'processed-data', 'processed-data-15m']
+        topics = ['raw-data', 'raw-data-15m', 'predicted-data', 'predicted-data-15m']
         for topic in topics:
             consumer = SimpleConsumer()
             thread = threading.Thread(target=consumer.main, args=(topic, topic))
@@ -70,12 +70,12 @@ class RunPipeline:
         self.ending_date = str((datetime.now() - timedelta(days=1)).isoformat()).split('T')[0] + 'T23:59:00Z'
 
         # create dataset
-        filename_1m = self.dataset_creator.main(start=self.starting_date, stop=self.ending_date, line='L301', timeframe='1m', machine='Blower-Pump-1')
-        filename_15m = self.dataset_creator.main(start=self.starting_date, stop=self.ending_date, line='L301', timeframe='15m', machine='Blower-Pump-1')
+        raw_df_1m = self.dataset_creator.main(start=self.starting_date, stop=self.ending_date, line='L301', timeframe='1m', machine='Blower-Pump-1')
+        raw_df_15m = self.dataset_creator.main(start=self.starting_date, stop=self.ending_date, line='L301', timeframe='15m', machine='Blower-Pump-1')
 
         # produce raw data
-        self.producer.main(topic='raw-data', data_filename=filename_1m)
-        self.producer.main(topic='raw-data-15m', data_filename=filename_15m)
+        self.producer.main(topic='raw-data', df=raw_df_1m)
+        self.producer.main(topic='raw-data-15m', df=raw_df_15m)
 
         # fetch raw data from druid
         time.sleep(15)  # wait for druid to consume the raw data from kafka topics
@@ -105,8 +105,7 @@ class RunPipeline:
 
         # insert model results into postgre db
         self.postgre_client.insert_data(table_name='model_results_1m', results=results_1m)
-        self.postgre_client.insert_data(table_name='model_results_15m', results=results_15m)
-        
+        self.postgre_client.insert_data(table_name='model_results_15m', results=results_15m)       
 
 
 if __name__ == '__main__':

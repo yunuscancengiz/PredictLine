@@ -50,8 +50,8 @@ class DatasetCreator:
         self.filename = self.create_filename()
         self.update_query()
         self.fetch_data()
-        self.create_csv()
-        return f'{self.DATASET_PATH}/{self.filename}'
+        df = self.create_dataframe()
+        return df
 
 
     def main_multiple(self):
@@ -60,7 +60,7 @@ class DatasetCreator:
             self.filename = self.create_filename()
             self.update_query()
             self.fetch_data()
-            self.create_csv()
+            self.convert_to_csv()
             time.sleep(15)
 
 
@@ -80,18 +80,21 @@ class DatasetCreator:
         self.df = pd.DataFrame(list_for_df)
 
 
-    def create_csv(self):
+    def create_dataframe(self):
         data = {}
         for col in self.df_columns:
             if col == 'machine' or col == 'time':
                 data[col] = self.df.loc[self.df['field'] == 'axialAxisRmsVibration'][col].reset_index(drop=True)
             else:
                 data[col] = self.df.loc[self.df['field'] == col]['value'].reset_index(drop=True)
-
         self.df = pd.DataFrame(data)
-        print(f'{self.df.describe().T}\n\n')
-        self.df.to_csv(f'{self.DATASET_PATH}/{self.filename}', index=False)
         return self.df
+
+
+    def convert_to_csv(self):
+        filename = f'{self.DATASET_PATH}/{self.filename}'
+        self.df.to_csv(filename, index=False)
+        return filename
     
 
     def update_query(self):

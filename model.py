@@ -93,12 +93,13 @@ class RNNModel:
         lstm_model.compile(optimizer='adam', loss='mean_squared_error')
         lstm_model.summary()
 
-        early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+        # @TODO:patience argument will be updated as 10
+        early_stopping = EarlyStopping(monitor='val_loss', patience=2, restore_best_weights=True)
 
         # Train LSTM model
         lstm_model.fit(
             X_train, y_train,
-            epochs=30,
+            epochs=3,       # @TODO: will be updated as 30
             batch_size=64,
             validation_split=0.2,
             callbacks=[early_stopping]
