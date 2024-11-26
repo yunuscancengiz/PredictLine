@@ -5,8 +5,8 @@ from druid_data import DruidDataFetcher
 from model import RNNModel
 from postgre_db import PostgreClient
 from consumer import SimpleConsumer
-import time
-from datetime import datetime, timedelta
+import time as t
+from datetime import datetime, timedelta, time
 import threading
 from _logger import ProjectLogger
 import traceback
@@ -32,21 +32,29 @@ class RunPipeline:
         self.ending_date = None
         self.consumers = []
 
+        self.starting_hour = 4
+        self.starting_minute = 28
+
 
     def run(self):
         self.start_consumers()
         while True:
             try:
                 now = datetime.now()
-                if now.hour == 4 and now.minute == 10:
+                if now.hour == self.starting_hour and now.minute == self.starting_minute:
                     self.pipeline()
 
-                # sleep until next midnight
-                tomorrow = datetime.now() + timedelta(days=1)
-                next_midnight = datetime.combine(tomorrow.date(), datetime.min.time())
-                sleep_seconds = (next_midnight - datetime.now()).total_seconds()
-                self.logger.info(msg=f'Pipeline ran successfully! The program will sleep until {next_midnight}.')
-                time.sleep(sleep_seconds)
+                    # sleep until next midnight
+                    tomorrow = datetime.now() + timedelta(days=1)
+                    next_midnight = datetime.combine(tomorrow.date(), datetime.min.time())
+                    sleep_seconds = (next_midnight - datetime.now()).total_seconds()
+                    self.logger.info(msg=f'Pipeline ran successfully! The program will sleep until {next_midnight}.')
+                    t.sleep(sleep_seconds)
+                else:
+                    starting_time = datetime.combine(datetime.now().date(), time(self.starting_hour, self.starting_minute))
+                    sleep_seconds = (starting_time - datetime.now()).total_seconds()
+                    self.logger.info(msg=f'The program will sleep until {starting_time}.')
+                    t.sleep(sleep_seconds)
             except KeyboardInterrupt:
                 raise
             except Exception as e:
@@ -78,7 +86,7 @@ class RunPipeline:
         self.producer.main(topic='raw-data-15m', df=raw_df_15m)
 
         # fetch raw data from druid
-        time.sleep(15)  # wait for druid to consume the raw data from kafka topics
+        t.sleep(15)  # wait for druid to consume the raw data from kafka topics
         df_1m = self.druid_fetcher.main(topic='raw-data')
         df_15m = self.druid_fetcher.main(topic='raw-data-15m')
 
@@ -91,7 +99,7 @@ class RunPipeline:
         self.producer.main(topic='processed-data-15m', df=processed_df_15m)
 
         # fetch processed data from druid
-        time.sleep(15)  # wait for druid to consume the processed data from kafka topics
+        t.sleep(15)  # wait for druid to consume the processed data from kafka topics
         df_1m = self.druid_fetcher.main(topic='processed-data')
         df_15m = self.druid_fetcher.main(topic='processed-data-15m')
 
