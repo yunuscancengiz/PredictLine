@@ -33,13 +33,15 @@ class RunPipeline:
         self.consumers = []
 
         self.starting_hour = 2
-        self.starting_minute = 6
+        self.starting_minute = 18
 
 
     def run(self):
         self.start_consumers()
         while True:
             try:
+                starting_time = datetime.combine(datetime.now().date(), time(self.starting_hour, self.starting_minute)).replace(second=0, microsecond=0)
+                self.logger.info(msg=f'The program will start at {starting_time}.')
                 now = datetime.now()
                 if now.hour == self.starting_hour and now.minute == self.starting_minute:
                     self.pipeline()
@@ -50,16 +52,12 @@ class RunPipeline:
                     sleep_seconds = max((next_midnight - datetime.now()).total_seconds(), 0)
                     self.logger.info(msg=f'Pipeline ran successfully! The program will sleep until {next_midnight}.')
                     t.sleep(sleep_seconds)
-                """else:
-                    starting_time = datetime.combine(datetime.now().date(), time(self.starting_hour, self.starting_minute)).replace(second=0, microsecond=0)
-                    sleep_seconds = max((starting_time - datetime.now()).total_seconds(), 0)
-                    self.logger.info(msg=f'The program will sleep until {starting_time}.')
-                    t.sleep(sleep_seconds)"""
             except KeyboardInterrupt:
                 raise
             except Exception as e:
                 self.logger.error(msg='Exception happened while running the main pipeline!')
                 self.logger.error(traceback.format_exc())
+                break
 
 
     def start_consumers(self):

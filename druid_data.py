@@ -47,7 +47,9 @@ class DruidDataFetcher:
 
     def convert_into_df(self, data:list):
         df = pd.DataFrame(data=data)
-        df = df.drop(['kafka.timestamp', 'kafka.key', 'kafka.topic'], axis=1)
+        columns_to_drop = ['kafka.timestamp', 'kafka.key', 'kafka.topic']
+        existing_columns_to_drop = [col for col in columns_to_drop if col in df.columns]
+        df = df.drop(existing_columns_to_drop, axis=1)
         self.logger.info(msg='Data converted into a dataframe...')
         return df
 
