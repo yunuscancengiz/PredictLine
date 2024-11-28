@@ -34,6 +34,13 @@ class PrepareInitialData:
         df_15m = self.fecth_druid_data(topic='raw-data-15m') # fetch 15m data from druid raw-data-15m topic
         processed_df_1m = self.process_data(df=df_1m)   # process 1m data
         processed_df_15m = self.process_data(df=df_15m) # process 15m data
+
+        print('\n----------------------------------\n')
+        print(processed_df_1m.head())
+        print('\n----------------------------------\n')
+        print(processed_df_15m.head())
+        print('\n----------------------------------\n')
+        
         self.produce_messages(topic='processed-data', df=processed_df_1m)   # send processed 1m data to processed-data 
         self.produce_messages(topic='processed-data-15m', df=processed_df_15m)  # send processed 15m data to p-d-15m
 
