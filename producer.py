@@ -75,6 +75,9 @@ class SimpleProducer:
             'radialAxisRmsVibration': str(self.messages.loc[index, 'radialAxisRmsVibration']),
             'temperature': str(self.messages.loc[index, 'temperature'])
         }
+        if 'is_running' in self.messages.columns:
+            data['is_running'] = str(self.messages.loc[index, 'is_running'])
+            
         key = str(int(time.time()))
         value = json.dumps(data).encode(encoding='utf-8')
         return key, value

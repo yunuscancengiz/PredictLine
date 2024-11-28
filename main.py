@@ -91,14 +91,6 @@ class RunPipeline:
         # pre-process data
         processed_df_1m = self.preprocesser.main(df=df_1m)
         processed_df_15m = self.preprocesser.main(df=df_15m)
-
-        print('\n----------------------------------\n')
-        print(processed_df_1m.head())
-        print('\n----------------------------------\n')
-        print(processed_df_15m.head())
-        print('\n----------------------------------\n')
-
-
         # produce processed data
         self.producer.main(topic='processed-data', df=processed_df_1m)
         self.producer.main(topic='processed-data-15m', df=processed_df_15m)
