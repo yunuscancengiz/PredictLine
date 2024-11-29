@@ -33,7 +33,8 @@ class RNNModel:
     def main(self, df:pd.DataFrame, input_days:int, output_days:int, interval_minute:int):
         self.df = df
         self.scaled_df = self.scaler.fit_transform(self.df[self.input_columns])     # normalize data
-        self.input_steps, self.output_steps = (input_days * 24 * (60 / interval_minute)), (output_days * 24 * (60 / interval_minute))
+        self.input_steps = int(input_days * 24 * (60 / interval_minute))
+        self.output_steps = int(output_days * 24 * (60 / interval_minute))
 
         X, y = self.prepare_data(df=self.scaled_df)
         X_train, X_test, y_train, y_test = self.split_and_reshape(X=X, y=y)
