@@ -33,7 +33,7 @@ class RunPipeline:
         self.consumers = []
 
         self.starting_hour = 5
-        self.starting_minute = 6
+        self.starting_minute = 13
 
 
     def run(self):
