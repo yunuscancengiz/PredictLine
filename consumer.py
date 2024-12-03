@@ -1,4 +1,4 @@
-from confluent_kafka import Consumer, KafkaException
+from confluent_kafka import Consumer, KafkaException, KafkaError
 import json
 import traceback
 from _logger import ProjectLogger
@@ -56,7 +56,7 @@ class SimpleConsumer:
                 if msg is None:
                     continue
                 if msg.error() is not None:
-                    if msg.error().code() == KafkaException._PARTITION_EOF:
+                    if msg.error().code() == KafkaError._PARTITION_EOF:
                         continue
                     else:
                         self.logger.error(msg=f'Error: {msg.error()}')
