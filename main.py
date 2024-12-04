@@ -32,7 +32,7 @@ class RunPipeline:
         self.ending_date = None
         self.consumers = []
 
-        self.starting_hour = 2
+        self.starting_hour = 15
         self.starting_minute = 45
 
 
