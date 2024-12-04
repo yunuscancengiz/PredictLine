@@ -62,7 +62,7 @@ class SimpleConsumer:
                         self.logger.error(msg=f'Error: {msg.error()}')
                         break
                 msg = self.deserialize_data(data=msg.value())
-                self.logger.info(msg=f'Consumed message: {msg}')
+                #self.logger.info(msg=f'Consumed message: {msg}')
                 self.influx_db_client.write_into_influxdb(bucket=self.influx_bucket, data=msg)
                 
             except KeyboardInterrupt:

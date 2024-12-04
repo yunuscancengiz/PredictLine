@@ -38,7 +38,7 @@ class InfluxWriter:
                 .field('temperture', float(data['temperature']))
             )
             self.write_api.write(bucket=self.bucket, org=self.organization, record=point)
-            self.logger.info(msg=f'Data uploaded successfully into {self.bucket} named Influx DB bucket.')
+            #self.logger.info(msg=f'Data uploaded successfully into {self.bucket} named Influx DB bucket.')
         except Exception as e:
             self.logger.error(msg=f'Exception happened while writing into {self.bucket} named Influx DB bucket!')
             self.logger.error(msg=traceback.format_exc())
