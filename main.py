@@ -32,8 +32,12 @@ class RunPipeline:
         self.ending_date = None
         self.consumers = []
 
-        self.starting_hour = 18
-        self.starting_minute = 53
+        # @ TODO: comment out starting hour and minute
+        #self.starting_hour = 0
+        #self.starting_minute = 0
+        now = datetime.now()
+        self.starting_hour = now.hour
+        self.starting_minute = now.minute
 
 
     def run(self):
