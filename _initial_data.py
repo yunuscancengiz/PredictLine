@@ -19,8 +19,8 @@ class PrepareInitialData:
 
         self.starting_date_1m = '2024-01-14T00:00:00Z'
         self.ending_date_1m = '2024-01-14T00:02:00Z'
-        self.starting_date_1m = '2024-01-14T00:00:00Z'
-        self.ending_date_1m = '2024-01-14T00:18:00Z'
+        self.starting_date_15m = '2024-01-14T00:00:00Z'
+        self.ending_date_15m = '2024-01-14T00:18:00Z'
 
         self.dataset_creator = DatasetCreator()
         self.producer = SimpleProducer()
