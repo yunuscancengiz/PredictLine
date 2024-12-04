@@ -90,7 +90,7 @@ class RunPipeline:
         self.producer.main(topic='raw-data-15m', df=raw_df_15m)
 
         # fetch raw data from druid
-        t.sleep(15)  # wait for druid to consume the raw data from kafka topics
+        t.sleep(60)  # wait for druid to consume the raw data from kafka topics
         #df_1m = self.druid_fetcher.main(topic='raw-data')
         df_15m = self.druid_fetcher.main(topic='raw-data-15m')
 
@@ -102,7 +102,7 @@ class RunPipeline:
         self.producer.main(topic='processed-data-15m', df=processed_df_15m)
 
         # fetch processed data from druid
-        t.sleep(15)  # wait for druid to consume the processed data from kafka topics
+        t.sleep(60)  # wait for druid to consume the processed data from kafka topics
         #df_1m = self.druid_fetcher.main(topic='processed-data')
         df_15m = self.druid_fetcher.main(topic='processed-data-15m')
 
