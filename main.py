@@ -65,7 +65,8 @@ class RunPipeline:
 
 
     def start_consumers(self):
-        topics = ['raw-data', 'raw-data-15m', 'predicted-data', 'predicted-data-15m']
+        topics = ['raw-data', 'raw-data-15m', 'predicted-data', 'predicted-data-15m']  # @TODO: comment out
+        #topics = ['raw-data-15m', 'predicted-data-15m']     # @TODO: delete this line 
         for topic in topics:
             consumer = SimpleConsumer()
             thread = threading.Thread(target=consumer.main, args=(topic, topic))
