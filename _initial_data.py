@@ -38,12 +38,12 @@ class PrepareInitialData:
         #time.sleep(15)  # wait for druid's data consuming process
         #input('After introducing the Kafka topics to Druid, press Enter.')
         df_1m = self.fecth_druid_data(topic='raw-data')     # fetch 1m data from druid raw-data topic
-        df_15m = self.fecth_druid_data(topic='raw-data-15m') # fetch 15m data from druid raw-data-15m topic
+        #df_15m = self.fecth_druid_data(topic='raw-data-15m') # fetch 15m data from druid raw-data-15m topic
         processed_df_1m = self.process_data(df=df_1m)   # process 1m data
-        processed_df_15m = self.process_data(df=df_15m) # process 15m data
+        #processed_df_15m = self.process_data(df=df_15m) # process 15m data
         self.produce_messages(topic='processed-data', df=processed_df_1m)   # send processed 1m data to processed-data
         input('After introducing the processed-data topic to Druid, press Enter.')
-        self.produce_messages(topic='processed-data-15m', df=processed_df_15m)  # send processed 15m data to p-d-15m
+        #self.produce_messages(topic='processed-data-15m', df=processed_df_15m)  # send processed 15m data to p-d-15m
 
 
     def prepare_datasets(self, start:str, stop:str, timeframe:str):
