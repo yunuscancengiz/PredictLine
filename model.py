@@ -32,13 +32,17 @@ class RNNModel:
 
     def main(self, df:pd.DataFrame, input_days:int, output_days:int, interval_minute:int):
         self.df = df
+        self.scaled_df = self.scaler.fit_transform(self.df[self.input_columns])     # normalize data
+        self.input_steps = int((input_days - output_days) * 24 * (60 / interval_minute))
+        self.output_steps = int(output_days * 24 * (60 / interval_minute))
+
 
         print("Existing columns in DataFrame:", self.df.columns)
         print("Required input_columns:", self.input_columns)
-
-        self.scaled_df = self.scaler.fit_transform(self.df[self.input_columns])     # normalize data
-        self.input_steps = int(input_days * 24 * (60 / interval_minute))
-        self.output_steps = int(output_days * 24 * (60 / interval_minute))
+        print("Shape of original DataFrame:", self.df.shape)
+        print("Shape of scaled DataFrame:", self.scaled_df.shape)
+        print("Input steps:", self.input_steps)
+        print("Output steps:", self.output_steps)
 
         X, y = self.prepare_data(df=self.scaled_df)
         X_train, X_test, y_train, y_test = self.split_and_reshape(X=X, y=y)
