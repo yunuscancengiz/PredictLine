@@ -47,7 +47,7 @@ class RNNModel:
         X, y = self.prepare_data(df=self.scaled_df)
         X_train, X_test, y_train, y_test = self.split_and_reshape(X=X, y=y)
         X_test, y_test, y_pred, lstm_loss = self.LSTM_Model(X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test)
-        breakdown_probability = self.calculate_breakdown_probability(y_pred=y_pred)
+        breakdown_probability = self.calculate_breakdown_probability(y_pred=y_pred, column='axialAxisRmsVibration')
         results = self.calculate_model_performance(y_test=y_test, y_pred=y_pred)
         results['lstm loss'] = lstm_loss
         results['breakdown probability'] = breakdown_probability
