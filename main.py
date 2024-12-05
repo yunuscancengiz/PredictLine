@@ -91,8 +91,8 @@ class RunPipeline:
 
         # fetch raw data from druid
         t.sleep(10)  # wait for druid to consume the raw data from kafka topics
-        #df_1m = self.druid_fetcher.main(topic='raw-data')
-        df_15m = self.druid_fetcher.main(topic='raw-data-15m')
+        #df_1m = self.druid_fetcher.main(topic='raw-data', length=len(raw_df_1m))
+        df_15m = self.druid_fetcher.main(topic='raw-data-15m', length=len(raw_df_15m))
 
         # pre-process data
         #processed_df_1m = self.preprocesser.main(df=df_1m)
@@ -103,8 +103,8 @@ class RunPipeline:
 
         # fetch processed data from druid
         t.sleep(10)  # wait for druid to consume the processed data from kafka topics
-        #df_1m = self.druid_fetcher.main(topic='processed-data')
-        df_15m = self.druid_fetcher.main(topic='processed-data-15m')
+        #df_1m = self.druid_fetcher.main(topic='processed-data', length=len(processed_df_1m))
+        df_15m = self.druid_fetcher.main(topic='processed-data-15m', length=len(processed_df_15m))
 
         # run lstm model
         #results_1m, predicted_data_1m = self.lstm_model.main(df=df_1m, input_days=14, output_days=2, interval_minute=1)

@@ -37,8 +37,8 @@ class PrepareInitialData:
         input('After introducing the raw-data-15m topic to Druid, press Enter.')
         time.sleep(15)  # wait for druid's data consuming process
         #input('After introducing the Kafka topics to Druid, press Enter.')
-        #df_1m = self.fecth_druid_data(topic='raw-data')     # fetch 1m data from druid raw-data topic
-        df_15m = self.fecth_druid_data(topic='raw-data-15m') # fetch 15m data from druid raw-data-15m topic
+        #df_1m = self.fecth_druid_data(topic='raw-data', length=len(raw_df_1m))     # fetch 1m data from druid raw-data topic
+        df_15m = self.fecth_druid_data(topic='raw-data-15m', length=len(raw_df_15m)) # fetch 15m data from druid raw-data-15m topic
         #processed_df_1m = self.process_data(df=df_1m)   # process 1m data
         processed_df_15m = self.process_data(df=df_15m) # process 15m data
         #self.produce_messages(topic='processed-data', df=processed_df_1m)   # send processed 1m data to processed-data
@@ -61,8 +61,8 @@ class PrepareInitialData:
             self.logger.warning(msg='Datasource is not valid!')
 
 
-    def fecth_druid_data(self, topic:str) -> pd.DataFrame:
-        return self.druid_data_fetcher.main(topic=topic)
+    def fecth_druid_data(self, topic:str, length:int) -> pd.DataFrame:
+        return self.druid_data_fetcher.main(topic=topic, length=length)
     
 
     def process_data(self, df:pd.DataFrame):
