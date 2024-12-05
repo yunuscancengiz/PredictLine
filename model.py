@@ -33,7 +33,7 @@ class RNNModel:
     def main(self, df:pd.DataFrame, input_days:int, output_days:int, interval_minute:int):
         self.df = df
         self.scaled_df = self.scaler.fit_transform(self.df[self.input_columns])     # normalize data
-        self.input_steps = int((input_days * 24 * (60 / interval_minute)) * 0.9)
+        self.input_steps = int(((input_days - output_days) * 24 * (60 / interval_minute)) * 0.9)
         self.output_steps = int((output_days * 24 * (60 / interval_minute)) * 0.9)
 
         print("Existing columns in DataFrame:", self.df.columns)
