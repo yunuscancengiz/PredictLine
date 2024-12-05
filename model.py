@@ -43,6 +43,7 @@ class RNNModel:
         print("Shape of scaled DataFrame:", self.scaled_df.shape)
         print("Input steps:", self.input_steps)
         print("Output steps:", self.output_steps)
+        print("Giriş sütunları:", self.df[self.input_columns].head())
 
         X, y = self.prepare_data(df=self.scaled_df)
         X_train, X_test, y_train, y_test = self.split_and_reshape(X=X, y=y)
@@ -77,6 +78,8 @@ class RNNModel:
             X.append(df[i:i + self.input_steps])  # Use all columns for X
             y.append(data[i + self.input_steps:i + self.input_steps + self.output_steps])  # Only target column for y
 
+        print(f"X uzunluğu: {len(X)}, y uzunluğu: {len(y)}")
+
         return np.array(X), np.array(y)
     
 
@@ -88,6 +91,9 @@ class RNNModel:
         # Reshape input data to 3D for LSTM[samples, timesteps, features]
         X_train = X_train.reshape((X_train.shape[0], X_train.shape[1], len(self.input_columns)))
         X_test = X_test.reshape((X_test.shape[0], X_test.shape[1], len(self.input_columns)))
+
+        print(f"X_train: {len(X_train)}, X_test: {len(X_test)}, y_train: {len(y_train)}, y_test: {len(y_test)}")
+
         return X_train, X_test, y_train, y_test
     
 

@@ -106,6 +106,8 @@ class RunPipeline:
         #df_1m = self.druid_fetcher.main(topic='processed-data')"""
         df_15m = self.druid_fetcher.main(topic='processed-data-15m')
 
+        print("Veri çerçevesi satır sayısı:", len(df_15m))
+
         # run lstm model
         #results_1m, predicted_data_1m = self.lstm_model.main(df=df_1m, input_days=14, output_days=2, interval_minute=1)
         results_15m, predicted_data_15m = self.lstm_model.main(df=df_15m, input_days=90, output_days=10, interval_minute=15)
