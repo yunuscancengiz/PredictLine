@@ -129,9 +129,10 @@ class RNNModel:
             if len(y_pred) == 0:
                 self.logger.warning(msg='Breakdown probability can not calculated because y_test is an empty list!')
                 return 0
-        
+
+            y_pred = y_pred.flatten()
             threshold = self.thresholds[column]
-            number_of_breakdowns = sum(value < threshold for value in y_pred)
+            number_of_breakdowns = np.sum(y_pred < threshold)
             breakdown_probability = round(float((number_of_breakdowns * 100) / len(y_pred)), 2)
             self.logger.info(msg=f'Breakdown probability calculated as {breakdown_probability}%')
         except Exception as e:
