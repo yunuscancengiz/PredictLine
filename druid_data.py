@@ -20,10 +20,9 @@ class DruidDataFetcher:
         self.url = f'http://{self.SERVER_IP}:{self.PORT}/druid/v2/sql'
 
 
-    def main(self, topic:str, length:int):
+    def main(self, topic:str):
         try:
             self.topic = topic
-            self.length = length
 
             data = self.fetch()
             df = self.convert_into_df(data=data)
@@ -34,21 +33,16 @@ class DruidDataFetcher:
 
 
     def fetch(self):
-        while True:
-            query = f'SELECT * FROM "{self.topic}"'
-            payload = json.dumps({'query': query})
-            headers = {'Content-Type': 'application/json'}
-            response = requests.post(self.url, headers=headers, data=payload)
-            if response.status_code == 200:
-                self.logger.info(msg=f'Data successfully fetched from {self.topic} named table!')
-                data = response.json()
-                if len(data) >= self.length:
-                    return data
-                else:
-                    self.logger.warning(msg=f'Druid {self.topic} named table is not ready! Retrying... ')
-                    time.sleep(2)
-            else:
-                self.logger.warning(msg=f'Exception happened while fetching data from {self.topic} named table. That might cause an error.')
+        query = f'SELECT * FROM "{self.topic}"'
+        payload = json.dumps({'query': query})
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(self.url, headers=headers, data=payload)
+        if response.status_code == 200:
+            self.logger.info(msg=f'Data successfully fetched from {self.topic} named table!')
+            data = response.json()
+            return data
+        else:
+            self.logger.warning(msg=f'Exception happened while fetching data from {self.topic} named table. That might cause an error.')
 
 
     def convert_into_df(self, data:list):
