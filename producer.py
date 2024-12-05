@@ -65,19 +65,7 @@ class SimpleProducer:
 
 
     def serialize_data(self, index:int):
-        data = {
-            'machine': str(self.messages.loc[index, 'machine']),
-            'time': str(self.messages.loc[index, 'time']),
-            'axialAxisRmsVibration': str(self.messages.loc[index, 'axialAxisRmsVibration']),
-            'radialAxisKurtosis': str(self.messages.loc[index, 'radialAxisKurtosis']),
-            'radialAxisPeakAcceleration': str(self.messages.loc[index, 'radialAxisPeakAcceleration']),
-            'radialAxisRmsAcceleration': str(self.messages.loc[index, 'radialAxisRmsAcceleration']),
-            'radialAxisRmsVibration': str(self.messages.loc[index, 'radialAxisRmsVibration']),
-            'temperature': str(self.messages.loc[index, 'temperature'])
-        }
-        if 'is_running' in self.messages.columns:
-            data['is_running'] = str(self.messages.loc[index, 'is_running'])
-            
+        data = {col: str(self.messages.loc[index, col]) for col in self.messages.columns}
         key = str(int(time.time()))
         value = json.dumps(data).encode(encoding='utf-8')
         return key, value
