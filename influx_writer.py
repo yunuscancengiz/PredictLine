@@ -25,18 +25,26 @@ class InfluxWriter:
     def write_into_influxdb(self, bucket:str, data:dict):
         try:
             self.bucket = bucket
-            point = (
-                Point(measurement_name='sensor_data')
-                .time(data['time'])
-                .tag('topic', bucket)
-                .field('machine', data['machine'])
-                .field('axialAxisRmsVibration', float(data['axialAxisRmsVibration']))
-                .field('radialAxisKurtosis', float(data['radialAxisKurtosis']))
-                .field('radialAxisPeakAcceleration', float(data['radialAxisPeakAcceleration']))
-                .field('radialAxisRmsAcceleration', float(data['radialAxisRmsAcceleration']))
-                .field('radialAxisRmsVibration', float(data['radialAxisRmsVibration']))
-                .field('temperture', float(data['temperature']))
-            )
+            if self.bucket == 'predicted-data' or self.bucket == 'predicted-data-15m':
+                point = (
+                    Point(measurement_name='prediction')
+                    .time(data['time'])
+                    .tag('topic', bucket)
+                    .field('PredictedAxialAxisRmsVibration', float(data['PredictedAxialAxisRmsVibration']))
+                )
+            else:
+                point = (
+                    Point(measurement_name='sensor_data')
+                    .time(data['time'])
+                    .tag('topic', bucket)
+                    .field('machine', data['machine'])
+                    .field('axialAxisRmsVibration', float(data['axialAxisRmsVibration']))
+                    .field('radialAxisKurtosis', float(data['radialAxisKurtosis']))
+                    .field('radialAxisPeakAcceleration', float(data['radialAxisPeakAcceleration']))
+                    .field('radialAxisRmsAcceleration', float(data['radialAxisRmsAcceleration']))
+                    .field('radialAxisRmsVibration', float(data['radialAxisRmsVibration']))
+                    .field('temperture', float(data['temperature']))
+                )
             self.write_api.write(bucket=self.bucket, org=self.organization, record=point)
             #self.logger.info(msg=f'Data uploaded successfully into {self.bucket} named Influx DB bucket.')
         except Exception as e:
