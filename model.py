@@ -36,21 +36,13 @@ class RNNModel:
         self.input_steps = int(((input_days - output_days) * 24 * (60 / interval_minute)) * 0.9)
         self.output_steps = int((output_days * 24 * (60 / interval_minute)) * 0.9)
 
-        print("Existing columns in DataFrame:", self.df.columns)
-        print("Required input_columns:", self.input_columns)
-        print("Shape of original DataFrame:", self.df.shape)
-        print("Shape of scaled DataFrame:", self.scaled_df.shape)
-        print("Input steps:", self.input_steps)
-        print("Output steps:", self.output_steps)
-        print("Giriş sütunları:", self.df[self.input_columns].head())
-
         X, y = self.prepare_data(df=self.scaled_df)
         X_train, X_test, y_train, y_test = self.split_and_reshape(X=X, y=y)
         X_test, y_test, y_pred, lstm_loss = self.LSTM_Model(X_train=X_train, X_test=X_test, y_train=y_train, y_test=y_test)
         breakdown_probability = self.calculate_breakdown_probability(y_pred=y_pred, column='axialAxisRmsVibration')
         results = self.calculate_model_performance(y_test=y_test, y_pred=y_pred)
-        results['lstm loss'] = lstm_loss
-        results['breakdown probability'] = breakdown_probability
+        results['lstm_loss'] = lstm_loss
+        results['breakdown_probability'] = breakdown_probability
         results['timestamp'] = datetime.now().replace(second=0, microsecond=0)
         predicted_data = self.add_time_column_to_predicted_values(y_pred=y_pred, interval_minute=interval_minute)
         return results, predicted_data
@@ -76,9 +68,6 @@ class RNNModel:
         for i in range(len(data) - self.input_steps - self.output_steps + 1):
             X.append(df[i:i + self.input_steps])  # Use all columns for X
             y.append(data[i + self.input_steps:i + self.input_steps + self.output_steps])  # Only target column for y
-
-        print(f"X uzunluğu: {len(X)}, y uzunluğu: {len(y)}")
-
         return np.array(X), np.array(y)
     
 
@@ -90,9 +79,7 @@ class RNNModel:
         # Reshape input data to 3D for LSTM[samples, timesteps, features]
         X_train = X_train.reshape((X_train.shape[0], X_train.shape[1], len(self.input_columns)))
         X_test = X_test.reshape((X_test.shape[0], X_test.shape[1], len(self.input_columns)))
-
-        print(f"X_train: {len(X_train)}, X_test: {len(X_test)}, y_train: {len(y_train)}, y_test: {len(y_test)}")
-
+        
         return X_train, X_test, y_train, y_test
     
 
@@ -165,8 +152,8 @@ class RNNModel:
         recall = recall_score(y_test_binary, y_pred_binary)
 
         metrics = {
-            'accuracy score': accuracy,
-            'f1 score': f1,
+            'accuracy_score': accuracy,
+            'f1_score': f1,
             'precision': precision,
             'recall': recall
         }

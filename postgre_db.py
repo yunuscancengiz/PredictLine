@@ -60,7 +60,7 @@ class PostgreClient:
             values = (
                 results["timestamp"],
                 results["lstm_loss"],
-                results["accuracy"],
+                results["accuracy_score"],
                 results["f1_score"],
                 results["precision"],
                 results["recall"],
