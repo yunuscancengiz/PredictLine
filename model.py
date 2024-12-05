@@ -143,6 +143,7 @@ class RNNModel:
 
     def add_time_column_to_predicted_values(self, y_pred, interval_minute):
         try:
+            y_pred = y_pred.flatten()
             timestamps = pd.date_range(start=self.start_time, periods=len(y_pred), freq=f'{interval_minute}T')
             predicted_data = pd.DataFrame({
                 'time': timestamps,
