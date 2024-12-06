@@ -136,6 +136,13 @@ class RNNModel:
                 'time': timestamps,
                 'PredictedAxialAxisRmsVibration': y_pred
             })
+
+            print('\n--------------------------\nypred:')
+            print(y_pred)
+            print(f'ypred uzunluk: {len(y_pred)}')
+            print('\n--------------------------\npredicted data:')
+            print(predicted_data.head())
+            print(f'predicted data shape: {predicted_data.shape}')
         except Exception as e:
             self.logger.error(msg='Exception happened while adding time column to the predicted values!')
             self.logger.error(msg=traceback.format_exc())
