@@ -34,7 +34,7 @@ class RNNModel:
         self.df = df
         self.scaled_df = self.scaler.fit_transform(self.df[self.input_columns])     # normalize data
         self.input_steps = int(((input_days - output_days) * 24 * (60 / interval_minute)) * 0.9)
-        self.output_steps = int((output_days * 24 * (60 / interval_minute)) * 0.9)
+        self.output_steps = int(output_days * 24 * (60 / interval_minute))
 
         X, y = self.prepare_data(df=self.scaled_df)
         X_train, X_test, y_train, y_test = self.split_and_reshape(X=X, y=y)
@@ -107,7 +107,7 @@ class RNNModel:
         )
 
         lstm_loss = lstm_model.evaluate(X_test, y_test)
-        y_pred = lstm_model.predict(X_test)
+        y_pred = lstm_model.predict(X_test[0])
         return X_test, y_test, y_pred, lstm_loss
     
 
@@ -167,10 +167,11 @@ class RNNModel:
             'precision': precision,
             'recall': recall
         }
+        print(f'\n---------------------------\nmetrics:\n{metrics}')
         return metrics
 
     
 
 if __name__ == '__main__':
-    model = RNNModel(filename='dataset/1724929644/dataset-60d-30d.csv')
+    model = RNNModel()
     model.main()
