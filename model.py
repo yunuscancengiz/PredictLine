@@ -153,8 +153,10 @@ class RNNModel:
     
 
     def calculate_model_performance(self, y_test, y_pred):
+        print(f'\n---------------\ny_test:\n{y_test}\n\ny_pred:\n{y_pred}\n-------------------\n')
         y_pred_binary = np.round(y_pred).flatten()
         y_test_binary = np.round(y_test).flatten()
+        print(f'\n---------------\ny_test bin:\n{y_test_binary}\n\ny_pred bin:\n{y_pred_binary}\n-------------------\n')
 
         accuracy = accuracy_score(y_test_binary, y_pred_binary)
         f1 = f1_score(y_test_binary, y_pred_binary)
