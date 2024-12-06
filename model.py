@@ -107,7 +107,7 @@ class RNNModel:
         )
 
         lstm_loss = lstm_model.evaluate(X_test, y_test)
-        y_pred = lstm_model.predict(X_test[0])
+        y_pred = lstm_model.predict(X_test[:1])
         return X_test, y_test, y_pred, lstm_loss
     
 
