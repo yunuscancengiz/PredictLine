@@ -130,6 +130,9 @@ class RNNModel:
 
     def add_time_column_to_predicted_values(self, y_pred, interval_minute):
         try:
+            print(f'\ninterval: {interval_minute}\n--------------------------\nypred:')
+            print(y_pred)
+            print(f'ypred uzunluk: {len(y_pred)}')
             y_pred = y_pred.flatten()
             timestamps = pd.date_range(start=self.start_time, periods=len(y_pred), freq=f'{interval_minute}T')
             predicted_data = pd.DataFrame({
@@ -137,9 +140,9 @@ class RNNModel:
                 'PredictedAxialAxisRmsVibration': y_pred
             })
 
-            print('\n--------------------------\nypred:')
+            print('\n--------------------------\nflatten ypred:')
             print(y_pred)
-            print(f'ypred uzunluk: {len(y_pred)}')
+            print(f'flatten ypred uzunluk: {len(y_pred)}')
             print('\n--------------------------\npredicted data:')
             print(predicted_data.head())
             print(f'predicted data shape: {predicted_data.shape}')
