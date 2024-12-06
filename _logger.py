@@ -26,7 +26,7 @@ class ProjectLogger:
         logger.setLevel(level=logging.INFO)
         console_handler = logging.StreamHandler()
         console_handler.setLevel(logging.INFO)
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        formatter = ColorFormatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         console_handler.setFormatter(formatter)
         logger.addHandler(console_handler)
         logger.info(msg='Logger created successfully!')
