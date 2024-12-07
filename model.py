@@ -130,21 +130,16 @@ class RNNModel:
 
     def add_time_column_to_predicted_values(self, y_pred, interval_minute):
         try:
-            print(f'\ninterval: {interval_minute}\n--------------------------\nypred:')
-            print(y_pred)
-            print(f'ypred uzunluk: {len(y_pred)}')
             y_pred = y_pred.flatten()
-            timestamps = pd.date_range(start=self.start_time, periods=len(y_pred), freq=f'{interval_minute}T')
+            timestamps = pd.date_range(start=self.start_time, periods=len(y_pred), freq=f'{interval_minute}min')
             predicted_data = pd.DataFrame({
                 'time': timestamps,
                 'PredictedAxialAxisRmsVibration': y_pred
             })
 
-            print('\n--------------------------\nflatten ypred:')
-            print(y_pred)
-            print(f'flatten ypred uzunluk: {len(y_pred)}')
             print('\n--------------------------\npredicted data:')
             print(predicted_data.head())
+            print(predicted_data.tail())
             print(f'predicted data shape: {predicted_data.shape}')
         except Exception as e:
             self.logger.error(msg='Exception happened while adding time column to the predicted values!')
@@ -153,13 +148,12 @@ class RNNModel:
     
 
     def calculate_model_performance(self, y_test, y_pred):
-        print(f'\n---------------\ny_test:\n{y_test}\n\ny_pred:\n{y_pred}\n-------------------\n')
         y_pred_binary = np.round(y_pred).flatten()
         y_test_binary = np.round(y_test[0]).flatten()
-        print(f'\n---------------\ny_test bin:\n{y_test_binary}\n\ny_pred bin:\n{y_pred_binary}\n-------------------\n')
 
         if len(y_test_binary) != len(y_pred_binary):
-            raise ValueError(f"y_test ve y_pred uzunlukları eşleşmiyor: {len(y_test_binary)} != {len(y_pred_binary)}")
+            self.logger.error(msg=f'lengths of y_test and y_pred do not match: {len(y_test_binary)} != {len(y_pred_binary)}')
+            raise ValueError('Lenghts do not match!')
 
         accuracy = accuracy_score(y_test_binary, y_pred_binary)
         f1 = f1_score(y_test_binary, y_pred_binary)
@@ -172,7 +166,7 @@ class RNNModel:
             'precision': precision,
             'recall': recall
         }
-        print(f'\n---------------------------\nmetrics:\n{metrics}')
+        self.logger.info(msg=f'metrics:\n{metrics}')
         return metrics
 
     
