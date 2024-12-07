@@ -155,8 +155,11 @@ class RNNModel:
     def calculate_model_performance(self, y_test, y_pred):
         print(f'\n---------------\ny_test:\n{y_test}\n\ny_pred:\n{y_pred}\n-------------------\n')
         y_pred_binary = np.round(y_pred).flatten()
-        y_test_binary = np.round(y_test).flatten()
+        y_test_binary = np.round(y_test[0]).flatten()
         print(f'\n---------------\ny_test bin:\n{y_test_binary}\n\ny_pred bin:\n{y_pred_binary}\n-------------------\n')
+
+        if len(y_test_binary) != len(y_pred_binary):
+            raise ValueError(f"y_test ve y_pred uzunlukları eşleşmiyor: {len(y_test_binary)} != {len(y_pred_binary)}")
 
         accuracy = accuracy_score(y_test_binary, y_pred_binary)
         f1 = f1_score(y_test_binary, y_pred_binary)
