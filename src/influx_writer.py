@@ -48,7 +48,7 @@ class InfluxWriter:
             else:
                 point = (
                     Point(measurement_name='sensor_data')
-                    .time(data['time'])
+                    .time(nanosecond_timestamp, WritePrecision.NS)
                     .tag('topic', bucket)
                     .field('machine', data['machine'])
                     .field('axialAxisRmsVibration', float(data['axialAxisRmsVibration']))
@@ -58,7 +58,7 @@ class InfluxWriter:
                     .field('radialAxisRmsVibration', float(data['radialAxisRmsVibration']))
                     .field('temperture', float(data['temperature']))
                 )
-            self.write_api.write(bucket=self.bucket, org=self.organization, record=point)
+            self.write_api.write(bucket=self.bucket, org=self.organization, record=point, write_precision=WritePrecision.NS)
             #self.logger.info(msg=f'Data uploaded successfully into {self.bucket} named Influx DB bucket.')
         except Exception as e:
             self.logger.error(msg=f'Exception happened while writing into {self.bucket} named Influx DB bucket!')
