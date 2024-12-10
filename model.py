@@ -65,19 +65,19 @@ class RNNModel:
 
             if self.model_name is not None and self.model_name in models:
                 self.logger.info(msg=f'{self.model_name} named model will be used for predictions!')
-                self.load_existing_model_and_predict(model_name=self.model_name)              
+                return self.load_existing_model_and_predict(model_name=self.model_name)              
             elif len(models) > 0:
                 latest_timestamp = 0
                 for model in models:
                     if int(str(model).split('_')[1]) > latest_timestamp:
                         self.model_name = model
                 self.logger.info(msg=f'Latest model ({self.model_name}) will be used for predictions!')
-                self.load_existing_model_and_predict(model_name=self.model_name)
+                return self.load_existing_model_and_predict(model_name=self.model_name)
             else:
                 self.logger.warning(msg=f'No saved model found! New model will be trained...')
-                self.train_new_model_and_predict()
+                return self.train_new_model_and_predict()
         else:
-            self.train_new_model_and_predict()
+            return self.train_new_model_and_predict()
 
 
     def load_existing_model_and_predict(self, model_name:str):
@@ -87,6 +87,7 @@ class RNNModel:
         except Exception as e:
             self.logger.error(msg=f'Exception happened while loading {model_name} named model!')
             self.logger.error(msg=traceback.format_exc())
+            return None, None
 
         X, y = self.prepare_data(df=self.df, window_size=self.window_size)
         X_train, y_train, X_test, y_test, X_val, y_val = self.split_data(X=X, y=y, train_size=self.train_size, test_size=self.test_size)
@@ -96,7 +97,11 @@ class RNNModel:
         predictions = self.predict_future_values(X=X, model=lstm_model, output_steps=self.output_steps, feature_scaler=feature_scaler, target_scaler=target_scaler)
         timestamped_predictions = self.add_time_column_to_predicted_values(predictions=predictions, interval_minute=self.interval_minute)
         breakdown_probability = self.calculate_breakdown_probability(predictions=timestamped_predictions, column=self.target_column)
-        results = None
+        results = self.calculate_model_performance(model=lstm_model, X_test_scaled=X_test_scaled, y_test=y_test, target_scaler=target_scaler)
+        results['lstm_loss'] = 0
+        results['breakdown_probability'] = breakdown_probability
+        results['timestamp'] = datetime.now().replace(second=0, microsecond=0)
+        results['model_name'] = str(self.model_name)
         return results, timestamped_predictions
 
 
@@ -117,6 +122,7 @@ class RNNModel:
         results['lstm_loss'] = lstm_loss
         results['breakdown_probability'] = breakdown_probability
         results['timestamp'] = datetime.now().replace(second=0, microsecond=0)
+        results['model_name'] = str(self.model_name)
         return results, timestamped_predictions
 
 
@@ -206,8 +212,8 @@ class RNNModel:
 
         # @TODO:patience argument will be updated as 10
         early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
-        model_name = f'{self.model_directory_path}/model_{int(time.time())}_{self.interval_minute}m.keras'
-        checkpoint = ModelCheckpoint(model_name, save_best_only=True)
+        self.model_name = f'model_{int(time.time())}_{self.interval_minute}m.keras'
+        checkpoint = ModelCheckpoint(f'{self.model_directory_path}/{self.model_name}', save_best_only=True)
         lstm_model.compile(loss=MeanSquaredError(), optimizer=Adam(learning_rate=0.0001), metrics=[RootMeanSquaredError()])
         lstm_model.fit(X_train_scaled, y_train_scaled, validation_data=(X_val_scaled, y_val_scaled), epochs=self.EPOCHS, batch_size=32, callbacks=[checkpoint, early_stopping])
         lstm_loss = lstm_model.evaluate(X_test_scaled, y_test_scaled)

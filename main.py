@@ -108,7 +108,7 @@ class RunPipeline:
 
         # run lstm model
         #results_1m, predicted_data_1m = self.lstm_model.main(load_best_model=True, df=df_1m, input_days=14, output_days=2, interval_minute=1)
-        results_15m, predicted_data_15m = self.lstm_model.main(load_best_model=True, df=df_15m, input_days=90, output_days=10, interval_minute=15)
+        results_15m, predicted_data_15m = self.lstm_model.main(load_best_model=False, df=df_15m, input_days=90, output_days=10, interval_minute=15)
 
         # produce predicted data 
         #self.producer.main(topic='predicted-data', df=predicted_data_1m)

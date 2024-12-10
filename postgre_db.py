@@ -31,6 +31,7 @@ class PostgreClient:
                 CREATE TABLE IF NOT EXISTS {table_name}(
                     id SERIAL PRIMARY KEY,
                     timestamp TIMESTAMP NOT NULL,
+                    model_name TEXT NOT NULL,
                     lstm_loss FLOAT NOT NULL,
                     MAE FLOAT NOT NULL,
                     MSE FLOAT NOT NULL,
@@ -55,11 +56,12 @@ class PostgreClient:
         try:
             query = f'''
                 INSERT INTO {table_name} (
-                    timestamp, lstm_loss, MAE, MSE, RMSE, MAPE, R2, breakdown_probability
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+                    timestamp, model_name, lstm_loss, MAE, MSE, RMSE, MAPE, R2, breakdown_probability
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
             '''
             values = (
                 results["timestamp"],
+                results["model_name"],
                 results["lstm_loss"],
                 results["MAE"],
                 results["MSE"],
