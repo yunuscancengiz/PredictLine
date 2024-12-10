@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, GRU, Dense, Dropout
+from tensorflow.keras.layers import LSTM, GRU, Dense, Dropout, Input
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from tensorflow.keras.losses import MeanSquaredError
 from tensorflow.keras.metrics import RootMeanSquaredError
@@ -208,7 +208,8 @@ class RNNModel:
 
     def LSTM_Model(self, X_train_scaled, y_train_scaled, X_test_scaled, y_test_scaled, X_val_scaled, y_val_scaled):
         lstm_model = Sequential()
-        lstm_model.add(LSTM(100, return_sequences=True, input_shape=(X_train_scaled.shape[1], X_train_scaled.shape[2])))
+        lstm_model.add(Input(shape=(X_train_scaled.shape[1], X_train_scaled.shape[2])))
+        lstm_model.add(LSTM(100, return_sequences=True))
         lstm_model.add(Dropout(0.3))
         lstm_model.add(LSTM(50))
         lstm_model.add(Dropout(0.2))
