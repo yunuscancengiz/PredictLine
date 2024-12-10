@@ -25,7 +25,11 @@ class InfluxWriter:
 
     def write_into_influxdb(self, bucket:str, data:dict):
         try:
+            print(f"Before conversion: {data['time']}")
             data['time'] = datetime.fromisoformat(data['time'])
+            print(f"Before conversion: {data['time']}")
+            print(f"Type of time: {type(data['time'])}")
+            
             self.bucket = bucket
             if self.bucket == 'predicted-data' or self.bucket == 'predicted-data-15m':
                 point = (

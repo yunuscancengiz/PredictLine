@@ -28,7 +28,7 @@ class RNNModel:
     }
     input_columns = ['axialAxisRmsVibration', 'radialAxisKurtosis', 'radialAxisPeakAcceleration', 'radialAxisRmsAcceleration', 'radialAxisRmsVibration', 'temperature', 'is_running']
     target_column = 'axialAxisRmsVibration'
-    EPOCHS = 10
+    EPOCHS = 3
 
     def __init__(self):
         self.df = None
