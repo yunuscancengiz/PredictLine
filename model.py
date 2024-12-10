@@ -121,6 +121,7 @@ class RNNModel:
 
 
     def preprocess(self, df):
+        print(df)
         df.index = pd.to_datetime(df['time'], format='%Y-%m-%dT%H:%M:%SZ')
         df.drop(inplace=True, axis=1, columns=['time', 'machine'])
         
