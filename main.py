@@ -17,11 +17,11 @@ class RunPipeline:
 
 
     def __init__(self):
+        self.lstm_model = RNNModel()
         self.dataset_creator = DatasetCreator()
         self.producer = SimpleProducer()
         self.druid_fetcher = DruidDataFetcher()
         self.preprocesser = DataPreprocessor()
-        self.lstm_model = RNNModel()
         self.postgre_client = PostgreClient()
 
         # create postgre tables
