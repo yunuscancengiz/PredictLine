@@ -1,14 +1,14 @@
-from _create_dataset import DatasetCreator
-from producer import SimpleProducer
-from data_processor import DataPreprocessor
-from druid_data import DruidDataFetcher
-from model import RNNModel
-from postgre_db import PostgreClient
-from consumer import SimpleConsumer
+from src._create_dataset import DatasetCreator
+from src.producer import SimpleProducer
+from src.data_processor import DataPreprocessor
+from src.druid_data import DruidDataFetcher
+from src.model import RNNModel
+from src.postgre_db import PostgreClient
+from src.consumer import SimpleConsumer
+from src._logger import ProjectLogger
 import time as t
 from datetime import datetime, timedelta, time
 import threading
-from _logger import ProjectLogger
 import traceback
 
 

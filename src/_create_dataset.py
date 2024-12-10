@@ -13,8 +13,8 @@ class DatasetCreator:
     URL = os.getenv('INFLUX_URL')
 
     #DIRECTORY_NAME = f'{str(int(time.time()))}'
-    #os.makedirs(os.path.join(os.getcwd(), 'dataset', DIRECTORY_NAME))
-    #DATASET_PATH = os.path.join(os.getcwd(), 'dataset', DIRECTORY_NAME)
+    #os.makedirs(os.path.join(os.getcwd(), '..', 'dataset', DIRECTORY_NAME))
+    #DATASET_PATH = os.path.join(os.getcwd(), '..', 'dataset', DIRECTORY_NAME)
 
     db_columns = ['', 'result', 'table', '_start', '_stop', '_time', '_value', '_field', '_measurement', 'host', 'line', 'machine', 'name', 'slave_id', 'type']
     df_columns = ['machine', 'time', 'axialAxisRmsVibration', 'radialAxisKurtosis', 'radialAxisPeakAcceleration', 'radialAxisRmsAcceleration', 'radialAxisRmsVibration', 'temperature']

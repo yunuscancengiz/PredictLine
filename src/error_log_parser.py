@@ -4,7 +4,7 @@ import os
 
 class ErrorLogParser:
     def __init__(self, log_file:str) -> None:
-        self.path = os.path.join(os.getcwd(), 'error report')
+        self.path = os.path.join(os.getcwd(), '..', 'error report')
         self.log_file = self.path + '/' + log_file
         self.list_for_df = []
         self.empty_info = {'installed_machine': '', 'removed_machine': '', 'msg1': '', 'msg2': '', 'msg3': '', 'time': ''}
