@@ -98,10 +98,12 @@ class RNNModel:
         timestamped_predictions = self.add_time_column_to_predicted_values(predictions=predictions, interval_minute=self.interval_minute)
         breakdown_probability = self.calculate_breakdown_probability(predictions=timestamped_predictions, column=self.target_column)
         results = self.calculate_model_performance(model=lstm_model, X_test_scaled=X_test_scaled, y_test=y_test, target_scaler=target_scaler)
-        results['lstm_loss'] = 0
+        results['test_MSE'] = 0
+        results['test_RMSE'] = 0
         results['breakdown_probability'] = breakdown_probability
         results['timestamp'] = datetime.now().replace(second=0, microsecond=0)
         results['model_name'] = str(self.model_name)
+        results = self.convert_numpy_types(data=results)
         self.logger.info(msg=f'results:\n{results}')
         return results, timestamped_predictions
 
@@ -112,7 +114,7 @@ class RNNModel:
         X_train_scaled, X_test_scaled, X_val_scaled, feature_scaler = self.scale_features(X_train=X_train, X_test=X_test, X_val=X_val)
         y_train_scaled, y_test_scaled, y_val_scaled, target_scaler = self.scale_targets(y_train=y_train, y_test=y_test, y_val=y_val)
 
-        lstm_model, lstm_loss = self.LSTM_Model(
+        lstm_model, test_MSE, test_RMSE = self.LSTM_Model(
             X_train_scaled=X_train_scaled, X_test_scaled=X_test_scaled, X_val_scaled=X_val_scaled,
             y_train_scaled=y_train_scaled, y_test_scaled=y_test_scaled, y_val_scaled=y_val_scaled)
         
@@ -120,10 +122,12 @@ class RNNModel:
         timestamped_predictions = self.add_time_column_to_predicted_values(predictions=predictions, interval_minute=self.interval_minute)
         breakdown_probability = self.calculate_breakdown_probability(predictions=timestamped_predictions, column=self.target_column)
         results = self.calculate_model_performance(model=lstm_model, X_test_scaled=X_test_scaled, y_test=y_test, target_scaler=target_scaler)
-        results['lstm_loss'] = lstm_loss
+        results['test_MSE'] = test_MSE
+        results['test_RMSE'] = test_RMSE
         results['breakdown_probability'] = breakdown_probability
         results['timestamp'] = datetime.now().replace(second=0, microsecond=0)
         results['model_name'] = str(self.model_name)
+        results = self.convert_numpy_types(data=results)
         self.logger.info(msg=f'results:\n{results}')
         return results, timestamped_predictions
 
@@ -218,8 +222,8 @@ class RNNModel:
         checkpoint = ModelCheckpoint(f'{self.model_directory_path}/{self.model_name}', save_best_only=True)
         lstm_model.compile(loss=MeanSquaredError(), optimizer=Adam(learning_rate=0.0001), metrics=[RootMeanSquaredError()])
         lstm_model.fit(X_train_scaled, y_train_scaled, validation_data=(X_val_scaled, y_val_scaled), epochs=self.EPOCHS, batch_size=32, callbacks=[checkpoint, early_stopping])
-        lstm_loss = lstm_model.evaluate(X_test_scaled, y_test_scaled)
-        return lstm_model, lstm_loss
+        test_MSE, test_RMSE = lstm_model.evaluate(X_test_scaled, y_test_scaled)
+        return lstm_model, test_MSE, test_RMSE
     
 
     def predict_future_values(self, X, model, output_steps:int, feature_scaler, target_scaler):
@@ -291,6 +295,18 @@ class RNNModel:
         metrics = {"MAE": mae, "MSE": mse, "RMSE": rmse, "MAPE": mape, "R2": r2}
         self.logger.info(msg=f'metrics:\n{metrics}')
         return metrics
+    
+
+    def convert_numpy_types(self, data):
+        if isinstance(data, dict):
+            return {key: self.convert_numpy_types(value) for key, value in data.items()}
+        elif isinstance(data, list):
+            return [self.convert_numpy_types(item) for item in data]
+        elif isinstance(data, np.generic):  # numpy türü kontrolü
+            return data.item()
+        else:
+            return data
+
 
 
 if __name__ == '__main__':
