@@ -9,3 +9,4 @@ matplotlib
 seaborn
 tensorflow
 psycopg2-binary
+colorama

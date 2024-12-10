@@ -12,9 +12,9 @@ class DatasetCreator:
     TOKEN = os.getenv('INFLUX_TOKEN')
     URL = os.getenv('INFLUX_URL')
 
-    DIRECTORY_NAME = f'{str(int(time.time()))}'
-    os.makedirs(os.path.join(os.getcwd(), 'dataset', DIRECTORY_NAME))
-    DATASET_PATH = os.path.join(os.getcwd(), 'dataset', DIRECTORY_NAME)
+    #DIRECTORY_NAME = f'{str(int(time.time()))}'
+    #os.makedirs(os.path.join(os.getcwd(), 'dataset', DIRECTORY_NAME))
+    #DATASET_PATH = os.path.join(os.getcwd(), 'dataset', DIRECTORY_NAME)
 
     db_columns = ['', 'result', 'table', '_start', '_stop', '_time', '_value', '_field', '_measurement', 'host', 'line', 'machine', 'name', 'slave_id', 'type']
     df_columns = ['machine', 'time', 'axialAxisRmsVibration', 'radialAxisKurtosis', 'radialAxisPeakAcceleration', 'radialAxisRmsAcceleration', 'radialAxisRmsVibration', 'temperature']
@@ -92,7 +92,8 @@ class DatasetCreator:
 
 
     def convert_to_csv(self):
-        filename = f'{self.DATASET_PATH}/{self.filename}'
+        #filename = f'{self.DATASET_PATH}/{self.filename}'
+        filename = f'dataset/{self.filename}'
         self.df.to_csv(filename, index=False)
         return filename
     
