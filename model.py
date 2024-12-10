@@ -121,7 +121,6 @@ class RNNModel:
 
 
     def preprocess(self, df):
-        print(df)
         df.index = pd.to_datetime(df['__time'], format='ISO8601')
         df.drop(inplace=True, axis=1, columns=['__time', 'machine'])
         
@@ -207,7 +206,7 @@ class RNNModel:
 
         # @TODO:patience argument will be updated as 10
         early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
-        model_name = f'{self.model_directory_path}/model_{int(time.time)}_{self.interval_minute}m.keras'
+        model_name = f'{self.model_directory_path}/model_{int(time.time())}_{self.interval_minute}m.keras'
         checkpoint = ModelCheckpoint(model_name, save_best_only=True)
         lstm_model.compile(loss=MeanSquaredError(), optimizer=Adam(learning_rate=0.0001), metrics=[RootMeanSquaredError()])
         lstm_model.fit(X_train_scaled, y_train_scaled, validation_data=(X_val_scaled, y_val_scaled), epochs=self.EPOCHS, batch_size=32, callbacks=[checkpoint, early_stopping])
