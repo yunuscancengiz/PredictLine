@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, GRU, Dense, Dropout
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
@@ -14,6 +15,7 @@ from _logger import ProjectLogger
 from datetime import datetime
 import math
 import traceback
+import time
 
 
 class RNNModel:
@@ -26,27 +28,79 @@ class RNNModel:
     }
     input_columns = ['axialAxisRmsVibration', 'radialAxisKurtosis', 'radialAxisPeakAcceleration', 'radialAxisRmsAcceleration', 'radialAxisRmsVibration', 'temperature', 'is_running']
     target_column = 'axialAxisRmsVibration'
+    EPOCHS = 10
 
     def __init__(self):
         self.df = None
         self.input_steps = None
         self.output_steps = None
         self.window_size = None
+        self.model_name = None
+        self.model_directory_path = None
         self.train_size = 0.7   # percentage
         self.test_size = 0.2     # percentage
         self.start_time = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
 
-    def main(self, df:pd.DataFrame, input_days:int, output_days:int, interval_minute:int):
+    def main(self, load_best_model:bool, df:pd.DataFrame, input_days:int, output_days:int, interval_minute:int, model_name:str=None):
         self.df = self.preprocess(df=df)
         self.stats = self.calculate_stats(df=self.df, multiplier=3)
         self.window_size = math.floor(len(self.df) / 20)
         self.interval_minute = interval_minute
+        self.model_name = model_name
 
         # delete below if unnecessary
         self.input_steps = int((input_days - output_days) * 24 * (60 / interval_minute))
         self.output_steps = int(output_days * 24 * (60 / interval_minute))
 
+        self.model_directory_path = os.path.join(os.getcwd(), 'models', f'{interval_minute}m')
+        if not os.path.exists(self.model_directory_path):
+            os.makedirs(self.model_directory_path)
+
+        if load_best_model == True:
+            models = []
+            for f in os.listdir(path=self.model_directory_path):
+                if str(f).endswith('.keras'):
+                    models.append(f)
+
+            if self.model_name is not None and self.model_name in models:
+                self.logger.info(msg=f'{self.model_name} named model will be used for predictions!')
+                self.load_existing_model_and_predict(model_name=self.model_name)              
+            elif len(models) > 0:
+                latest_timestamp = 0
+                for model in models:
+                    if int(str(model).split('_')[1]) > latest_timestamp:
+                        self.model_name = model
+                self.logger.info(msg=f'Latest model ({self.model_name}) will be used for predictions!')
+                self.load_existing_model_and_predict(model_name=self.model_name)
+            else:
+                self.logger.warning(msg=f'No saved model found! New model will be trained...')
+                self.train_new_model_and_predict()
+        else:
+            self.train_new_model_and_predict()
+
+
+    def load_existing_model_and_predict(self, model_name:str):
+        try:
+            lstm_model = tf.keras.models.load_model(f'{self.model_directory_path}/{model_name}')
+            self.logger.info(msg=f'{model_name} named model successfully loaded!')
+        except Exception as e:
+            self.logger.error(msg=f'Exception happened while loading {model_name} named model!')
+            self.logger.error(msg=traceback.format_exc())
+
+        X, y = self.prepare_data(df=self.df, window_size=self.window_size)
+        X_train, y_train, X_test, y_test, X_val, y_val = self.split_data(X=X, y=y, train_size=self.train_size, test_size=self.test_size)
+        X_train_scaled, X_test_scaled, X_val_scaled, feature_scaler = self.scale_features(X_train=X_train, X_test=X_test, X_val=X_val)
+        y_train_scaled, y_test_scaled, y_val_scaled, target_scaler = self.scale_targets(y_train=y_train, y_test=y_test, y_val=y_val)
+
+        predictions = self.predict_future_values(X=X, model=lstm_model, output_steps=self.output_steps, feature_scaler=feature_scaler, target_scaler=target_scaler)
+        timestamped_predictions = self.add_time_column_to_predicted_values(predictions=predictions, interval_minute=self.interval_minute)
+        breakdown_probability = self.calculate_breakdown_probability(predictions=timestamped_predictions, column=self.target_column)
+        results = None
+        return results, timestamped_predictions
+
+
+    def train_new_model_and_predict(self):
         X, y = self.prepare_data(df=self.df, window_size=self.window_size)
         X_train, y_train, X_test, y_test, X_val, y_val = self.split_data(X=X, y=y, train_size=self.train_size, test_size=self.test_size)
         X_train_scaled, X_test_scaled, X_val_scaled, feature_scaler = self.scale_features(X_train=X_train, X_test=X_test, X_val=X_val)
@@ -151,16 +205,16 @@ class RNNModel:
         lstm_model.summary()
 
         # @TODO:patience argument will be updated as 10
-        early_stopping = EarlyStopping(monitor='val_loss', patience=1, restore_best_weights=True) 
-        checkpoint = ModelCheckpoint('best_model.keras', save_best_only=True)
+        early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+        model_name = f'{self.model_directory_path}/model_{int(time.time)}_{self.interval_minute}m.keras'
+        checkpoint = ModelCheckpoint(model_name, save_best_only=True)
         lstm_model.compile(loss=MeanSquaredError(), optimizer=Adam(learning_rate=0.0001), metrics=[RootMeanSquaredError()])
-        lstm_model.fit(X_train_scaled, y_train_scaled, validation_data=(X_val_scaled, y_val_scaled), epochs=2, batch_size=32, callbacks=[checkpoint, early_stopping])
+        lstm_model.fit(X_train_scaled, y_train_scaled, validation_data=(X_val_scaled, y_val_scaled), epochs=self.EPOCHS, batch_size=32, callbacks=[checkpoint, early_stopping])
         lstm_loss = lstm_model.evaluate(X_test_scaled, y_test_scaled)
         return lstm_model, lstm_loss
     
 
     def predict_future_values(self, X, model, output_steps:int, feature_scaler, target_scaler):
-        feature_scaler = StandardScaler()
         X_scaled = feature_scaler.fit_transform(X.reshape(-1, X.shape[2])).reshape(X.shape)
         predictions = []
         last_sequence = X_scaled[-1]
