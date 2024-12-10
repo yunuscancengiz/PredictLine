@@ -32,10 +32,11 @@ class PostgreClient:
                     id SERIAL PRIMARY KEY,
                     timestamp TIMESTAMP NOT NULL,
                     lstm_loss FLOAT NOT NULL,
-                    accuracy FLOAT NOT NULL,
-                    f1_score FLOAT NOT NULL,
-                    precision FLOAT NOT NULL,
-                    recall FLOAT NOT NULL,
+                    MAE FLOAT NOT NULL,
+                    MSE FLOAT NOT NULL,
+                    RMSE FLOAT NOT NULL,
+                    MAPE FLOAT NOT NULL,
+                    R2 FLOAT NOT NULL,
                     breakdown_probability FLOAT NOT NULL,
                     created_at TIMESTAMP DEFAULT NOW()
                 );
@@ -54,16 +55,17 @@ class PostgreClient:
         try:
             query = f'''
                 INSERT INTO {table_name} (
-                    timestamp, lstm_loss, accuracy, f1_score, precision, recall, breakdown_probability
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s);
+                    timestamp, lstm_loss, MAE, MSE, RMSE, MAPE, R2, breakdown_probability
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
             '''
             values = (
                 results["timestamp"],
                 results["lstm_loss"],
-                results["accuracy_score"],
-                results["f1_score"],
-                results["precision"],
-                results["recall"],
+                results["MAE"],
+                results["MSE"],
+                results["RMSE"],
+                results["MAPE"],
+                results["R2"],
                 results["breakdown_probability"]
             )
 

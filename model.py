@@ -46,7 +46,6 @@ class RNNModel:
         # delete below if unnecessary
         self.input_steps = int((input_days - output_days) * 24 * (60 / interval_minute))
         self.output_steps = int(output_days * 24 * (60 / interval_minute))
-        
 
         X, y = self.prepare_data(df=self.df, window_size=self.window_size)
         X_train, y_train, X_test, y_test, X_val, y_val = self.split_data(X=X, y=y, train_size=self.train_size, test_size=self.test_size)
@@ -227,7 +226,7 @@ class RNNModel:
         mape = np.mean(np.abs((y_test - y_pred) / y_test)) * 100
         r2 = r2_score(y_test, y_pred)
         
-        metrics = {"MAE": mae, "MSE": mse, "RMSE": rmse, "MAPE": mape, "R²": r2}
+        metrics = {"MAE": mae, "MSE": mse, "RMSE": rmse, "MAPE": mape, "R2": r2}
         self.logger.info(msg=f'metrics:\n{metrics}')
         return metrics
 
