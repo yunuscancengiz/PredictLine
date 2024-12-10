@@ -5,6 +5,7 @@ from _logger import ProjectLogger
 import traceback
 import os
 import time
+from datetime import datetime
 
 class InfluxWriter:
     load_dotenv()
@@ -24,6 +25,7 @@ class InfluxWriter:
 
     def write_into_influxdb(self, bucket:str, data:dict):
         try:
+            data['time'] = datetime.fromisoformat(data['time'])
             self.bucket = bucket
             if self.bucket == 'predicted-data' or self.bucket == 'predicted-data-15m':
                 point = (

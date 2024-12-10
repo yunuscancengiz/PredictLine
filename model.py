@@ -292,9 +292,7 @@ class RNNModel:
         rmse = np.sqrt(mse)
         mape = np.mean(np.abs((y_test - y_pred) / y_test)) * 100
         r2 = r2_score(y_test, y_pred)
-        
         metrics = {"MAE": mae, "MSE": mse, "RMSE": rmse, "MAPE": mape, "R2": r2}
-        self.logger.info(msg=f'metrics:\n{metrics}')
         return metrics
     
 
