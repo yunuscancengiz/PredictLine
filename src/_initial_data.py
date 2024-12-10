@@ -1,11 +1,11 @@
-from _create_dataset import DatasetCreator
-from producer import SimpleProducer
-from data_processor import DataPreprocessor
-from druid_data import DruidDataFetcher
+from src._create_dataset import DatasetCreator
+from src.producer import SimpleProducer
+from src.data_processor import DataPreprocessor
+from src.druid_data import DruidDataFetcher
 from datetime import datetime, timedelta
 import time
 import pandas as pd
-from _logger import ProjectLogger
+from src._logger import ProjectLogger
 
 
 class PrepareInitialData:

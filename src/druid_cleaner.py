@@ -3,7 +3,7 @@ import requests
 from datetime import timedelta, datetime
 import os
 from dotenv import load_dotenv
-from _logger import ProjectLogger
+from src._logger import ProjectLogger
 import traceback
 
 

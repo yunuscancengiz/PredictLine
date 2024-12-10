@@ -3,7 +3,7 @@ import json
 import os
 from dotenv import load_dotenv
 import traceback
-from _logger import ProjectLogger
+from src._logger import ProjectLogger
 import pandas as pd
 import time
 

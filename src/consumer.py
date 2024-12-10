@@ -1,9 +1,9 @@
 from confluent_kafka import Consumer, KafkaException, KafkaError
 import json
 import traceback
-from _logger import ProjectLogger
+from src._logger import ProjectLogger
 from dotenv import load_dotenv
-from influx_writer import InfluxWriter
+from src.influx_writer import InfluxWriter
 import os
 
 

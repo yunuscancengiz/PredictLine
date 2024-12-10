@@ -1,6 +1,6 @@
 import pandas as pd
 import traceback
-from _logger import ProjectLogger
+from src._logger import ProjectLogger
 
 
 class DataPreprocessor:
