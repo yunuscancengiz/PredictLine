@@ -27,8 +27,11 @@ class InfluxWriter:
     def write_into_influxdb(self, bucket:str, data:dict):
         try:
             print(f"Before conversion: {data['time']}")
-            data['time'] = datetime.fromisoformat(data['time'])
+            #data['time'] = datetime.fromisoformat(data['time'])
+            #data['time'] = data['time'].astimezone(UTC)
+
             data['time'] = data['time'].astimezone(UTC)
+            nanosecond_timestamp = int(data['time'].timestamp() * 1e9)
             print(f"After conversion: {data['time']}")
             print(f"Type of time: {type(data['time'])}")
 
@@ -36,7 +39,7 @@ class InfluxWriter:
             if self.bucket == 'predicted-data' or self.bucket == 'predicted-data-15m':
                 point = (
                     Point(measurement_name='prediction')
-                    .time(data['time'])
+                    .time(nanosecond_timestamp, WritePrecision.NS)
                     .tag('topic', bucket)
                     .field('PredictedAxialAxisRmsVibration', float(data['PredictedAxialAxisRmsVibration']))
                 )
