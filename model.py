@@ -102,6 +102,7 @@ class RNNModel:
         results['breakdown_probability'] = breakdown_probability
         results['timestamp'] = datetime.now().replace(second=0, microsecond=0)
         results['model_name'] = str(self.model_name)
+        self.logger.info(msg=f'results:\n{results}')
         return results, timestamped_predictions
 
 
@@ -123,6 +124,7 @@ class RNNModel:
         results['breakdown_probability'] = breakdown_probability
         results['timestamp'] = datetime.now().replace(second=0, microsecond=0)
         results['model_name'] = str(self.model_name)
+        self.logger.info(msg=f'results:\n{results}')
         return results, timestamped_predictions
 
 
