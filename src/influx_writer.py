@@ -30,8 +30,7 @@ class InfluxWriter:
             #data['time'] = datetime.fromisoformat(data['time'])
             #data['time'] = data['time'].astimezone(UTC)
             data['time'] = datetime.fromisoformat(data['time'])
-            data['time'] = data['time'].astimezone(UTC)
-            nanosecond_timestamp = int(data['time'].timestamp() * 1e9)
+            nanosecond_timestamp = int(data['time'].astimezone(UTC).timestamp() * 1e9)
             print(f"After conversion: {data['time']}")
             print(f"Type of time: {type(data['time'])}")
 
