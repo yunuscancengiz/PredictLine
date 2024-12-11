@@ -16,6 +16,7 @@ from datetime import datetime
 import math
 import traceback
 import time
+from typing import Literal
 
 
 class RNNModel:
@@ -48,6 +49,7 @@ class RNNModel:
         self.window_size = math.floor(len(self.df) / 20)
         self.interval_minute = interval_minute
         self.model_name = model_name
+        self.load_best_model = load_best_model
 
         # delete below if unnecessary
         self.input_steps = int((input_days - output_days) * 24 * (60 / interval_minute))
@@ -56,28 +58,8 @@ class RNNModel:
         self.model_directory_path = os.path.join(os.getcwd(), '..', 'models', f'{interval_minute}m')
         if not os.path.exists(self.model_directory_path):
             os.makedirs(self.model_directory_path)
-
-        if load_best_model == True:
-            models = []
-            for f in os.listdir(path=self.model_directory_path):
-                if str(f).endswith('.keras'):
-                    models.append(f)
-
-            if self.model_name is not None and self.model_name in models:
-                self.logger.info(msg=f'{self.model_name} named model will be used for predictions!')
-                return self.load_existing_model_and_predict(model_name=self.model_name)              
-            elif len(models) > 0:
-                latest_timestamp = 0
-                for model in models:
-                    if int(str(model).split('_')[1]) > latest_timestamp:
-                        self.model_name = model
-                self.logger.info(msg=f'Latest model ({self.model_name}) will be used for predictions!')
-                return self.load_existing_model_and_predict(model_name=self.model_name)
-            else:
-                self.logger.warning(msg=f'No saved model found! New model will be trained...')
-                return self.train_new_model_and_predict()
-        else:
-            return self.train_new_model_and_predict()
+        self.manage_model(job='select')     # select model, make predictions, save best model
+        self.manage_model(job='delete')     # delete old models if len(model_files) > 5
 
 
     def load_existing_model_and_predict(self, model_name:str):
@@ -302,10 +284,41 @@ class RNNModel:
             return {key: self.convert_numpy_types(value) for key, value in data.items()}
         elif isinstance(data, list):
             return [self.convert_numpy_types(item) for item in data]
-        elif isinstance(data, np.generic):  # numpy türü kontrolü
+        elif isinstance(data, np.generic):
             return data.item()
         else:
             return data
+        
+
+    def manage_model(self, job:Literal['select', 'delete'], prefix='model_', max_models=5):
+        if job not in ['select', 'delete']:
+            raise ValueError(f'Invalid job type: {job}. jon must be "select" or "delete".')
+        
+        suffix = f'_{self.interval_minute}m.keras'
+        model_files = [f for f in os.listdir(self.model_directory_path) if f.startswith(prefix) and f.endswith(suffix)]
+        model_files.sort(key=lambda x: int(x.split(prefix)[1].split(suffix)[0]), reverse=True)
+
+        if job == 'select':
+            if self.load_best_model == True:
+                if self.model_name is not None and self.model_name in model_files:
+                    self.logger.info(msg=f'Selected model ({self.model_name}) will be used for predictions!')
+                    return self.load_existing_model_and_predict(model_name=self.model_name)
+                elif len(model_files) > 0:
+                    self.model_name = model_files[0]
+                    self.logger.info(msg=f'Latest model ({self.model_name}) will be used for predictions!')
+                    return self.load_existing_model_and_predict(model_name=self.model_name)
+                else:
+                    self.logger.warning(msg=f'No saved model found! New model will be trained...')
+                    return self.train_new_model_and_predict()
+            else:
+                self.logger.info(msg='New model will be trained...')
+                return self.train_new_model_and_predict()
+        elif job == 'delete':
+            if len(model_files) > max_models:
+                files_to_remove = model_files[5:]
+                for f in files_to_remove:
+                    os.remove(os.path.join(self.model_directory_path, f))
+                self.logger.info(msg=f'Old models deleted! Deleted models: \n{files_to_remove}')
 
 
 
