@@ -41,6 +41,7 @@ class RunPipeline:
 
 
     def run(self):
+        time.sleep(600)     # wait 10 minutes for all services to start successfully
         self.start_consumers()
         starting_time = datetime.combine(datetime.now().date(), time(self.starting_hour, self.starting_minute)).replace(second=0, microsecond=0)
         self.logger.info(msg=f'The program will start at {starting_time}.')
