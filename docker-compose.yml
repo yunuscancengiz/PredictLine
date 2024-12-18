@@ -185,23 +185,6 @@ services:
     networks:
       - pm_pipeline_network
 
-  app:
-    build:
-      context: .
-    container_name: app
-    depends_on:
-      - kafka
-      - postgres
-      - grafana
-      - influxdb
-    volumes:
-      - .:/app
-    command: ["python", "main.py"]
-    environment:
-      PYTHONUNBUFFERED: "1"
-    networks:
-      - pm_pipeline_network
-
 networks:
   pm_pipeline_network:
     driver: bridge
