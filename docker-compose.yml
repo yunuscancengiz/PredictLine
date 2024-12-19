@@ -17,12 +17,12 @@ services:
     image: 'apache/kafka:latest'
     container_name: kafka
     environment:
-      KAFKA_LISTENERS: PLAINTEXT://kafka:9092,CONTROLLER://kafka:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${GCP_IP}:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_NODE_ID: 1
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@${GCP_IP}:9093
       KAFKA_LOG_DIRS: /var/lib/kafka/data
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
@@ -35,8 +35,8 @@ services:
       - '9093:9093'
     volumes:
       - ./kafka/data/kafka:/var/lib/kafka/data
-    networks:
-      - pm_pipeline_network
+    #networks:
+    #  - pm_pipeline_network
 
   postgresql:
     container_name: postgresql
@@ -49,16 +49,16 @@ services:
       - POSTGRES_PASSWORD=${POSTGRE_PASSWORD}
       - POSTGRES_USER=druid
       - POSTGRES_DB=druid
-    networks:
-      - pm_pipeline_network
+    #networks:
+    #  - pm_pipeline_network
 
   grafana:
     container_name: grafana
     image: grafana/grafana
     ports:
       - "3000:3000"
-    networks:
-      - pm_pipeline_network
+    #networks:
+    #  - pm_pipeline_network
 
   influxdb:
     container_name: influxdb
@@ -67,8 +67,8 @@ services:
       - "8086:8086"
     volumes:
       - influxdb_data:/var/lib/influxdb
-    networks:
-      - pm_pipeline_network
+    #networks:
+    #  - pm_pipeline_network
 
   postgres:
     container_name: postgres
@@ -81,8 +81,8 @@ services:
       - POSTGRES_PASSWORD=FoolishPassword
       - POSTGRES_USER=druid
       - POSTGRES_DB=druid
-    networks:
-      - pm_pipeline_network
+    #networks:
+    #  - pm_pipeline_network
 
   zookeeper:
     container_name: zookeeper
@@ -91,8 +91,8 @@ services:
       - "2181:2181"
     environment:
       - ZOO_MY_ID=1
-    networks:
-      - pm_pipeline_network
+    #networks:
+    #  - pm_pipeline_network
 
   coordinator:
     image: apache/druid:30.0.0
@@ -109,8 +109,8 @@ services:
       - coordinator
     env_file:
       - environment
-    networks:
-      - pm_pipeline_network
+    #networks:
+    #  - pm_pipeline_network
 
   broker:
     image: apache/druid:30.0.0
@@ -127,8 +127,8 @@ services:
       - broker
     env_file:
       - environment
-    networks:
-      - pm_pipeline_network
+    #networks:
+    #  - pm_pipeline_network
 
   historical:
     image: apache/druid:30.0.0
@@ -146,8 +146,8 @@ services:
       - historical
     env_file:
       - environment
-    networks:
-      - pm_pipeline_network
+    #networks:
+    #  - pm_pipeline_network
 
   middlemanager:
     image: apache/druid:30.0.0
@@ -166,8 +166,8 @@ services:
       - middleManager
     env_file:
       - environment
-    networks:
-      - pm_pipeline_network
+    #networks:
+    #  - pm_pipeline_network
 
   router:
     image: apache/druid:30.0.0
@@ -184,9 +184,9 @@ services:
       - router
     env_file:
       - environment
-    networks:
-      - pm_pipeline_network
+    #networks:
+    #  - pm_pipeline_network
 
-networks:
-  pm_pipeline_network:
-    driver: bridge
+#networks:
+#  pm_pipeline_network:
+#    driver: bridge
