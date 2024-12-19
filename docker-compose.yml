@@ -81,6 +81,8 @@ services:
       - POSTGRES_PASSWORD=FoolishPassword
       - POSTGRES_USER=druid
       - POSTGRES_DB=druid
+    networks:
+      - pm_pipeline_network
 
   zookeeper:
     container_name: zookeeper
