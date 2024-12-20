@@ -47,8 +47,8 @@ services:
       - postgres_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=${POSTGRE_PASSWORD}
-      - POSTGRES_USER=druid
-      - POSTGRES_DB=druid
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=results
     networks:
       - pm_pipeline_network
 
