@@ -29,6 +29,7 @@ class InfluxWriter:
             data['time'] = datetime.fromisoformat(data['time'])
             nanosecond_timestamp = int(data['time'].astimezone(UTC).timestamp() * 1e9)
             self.bucket = bucket
+            print(f'Bucket: {self.influx_bucket}')
             if self.bucket == 'predicted-data' or self.bucket == 'predicted-data-15m':
                 point = (
                     Point(measurement_name='prediction')
@@ -47,13 +48,15 @@ class InfluxWriter:
                     .field('radialAxisPeakAcceleration', float(data['radialAxisPeakAcceleration']))
                     .field('radialAxisRmsAcceleration', float(data['radialAxisRmsAcceleration']))
                     .field('radialAxisRmsVibration', float(data['radialAxisRmsVibration']))
-                    .field('temperture', float(data['temperature']))
+                    .field('temperature', float(data['temperature']))
+                    .field('is_running', data['is_running'])
                 )
             self.write_api.write(bucket=self.bucket, org=self.organization, record=point, write_precision=WritePrecision.NS)
             #self.logger.info(msg=f'Data uploaded successfully into {self.bucket} named Influx DB bucket.')
         except Exception as e:
-            self.logger.error(msg=f'Exception happened while writing into {self.bucket} named Influx DB bucket!')
-            self.logger.error(msg=traceback.format_exc())
+            pass
+            #self.logger.error(msg=f'Exception happened while writing into {self.bucket} named Influx DB bucket!')
+            #self.logger.error(msg=traceback.format_exc())
 
 
     def close_connection(self):
