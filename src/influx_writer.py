@@ -26,6 +26,9 @@ class InfluxWriter:
 
     def write_into_influxdb(self, bucket:str, data:dict):
         try:
+            if '__time' in data.columns:
+                data.rename(columns={'__time': 'time'}, inplace=True)
+            
             data['time'] = datetime.fromisoformat(data['time'])
             nanosecond_timestamp = int(data['time'].astimezone(UTC).timestamp() * 1e9)
             self.bucket = bucket
