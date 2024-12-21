@@ -75,7 +75,7 @@ class RunPipeline:
 
 
     def pipeline(self):
-        # calculate starting and ending dates
+        """# calculate starting and ending dates
         #self.starting_date_1m = str((datetime.now() - timedelta(days=14)).isoformat()).split('T')[0] + 'T00:00:00Z'
         #self.ending_date_1m = str((datetime.now() - timedelta(days=1)).isoformat()).split('T')[0] + 'T23:59:00Z'
         self.starting_date_15m = str((datetime.now() - timedelta(days=90)).isoformat()).split('T')[0] + 'T00:00:00Z'
@@ -90,7 +90,7 @@ class RunPipeline:
         self.producer.main(topic='raw-data-15m', df=raw_df_15m)
 
         # fetch raw data from druid
-        t.sleep(60)  # wait for druid to consume the raw data from kafka topics
+        t.sleep(60)  # wait for druid to consume the raw data from kafka topics"""
         #df_1m = self.druid_fetcher.main(topic='raw-data')
         df_15m = self.druid_fetcher.main(topic='raw-data-15m')
 
