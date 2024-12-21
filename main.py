@@ -85,6 +85,8 @@ class RunPipeline:
         #raw_df_1m = self.dataset_creator.main(start=self.starting_date_1m, stop=self.ending_date_1m, line='L301', timeframe='1m', machine='Blower-Pump-1')
         raw_df_15m = self.dataset_creator.main(start=self.starting_date_15m, stop=self.ending_date_15m, line='L301', timeframe='15m', machine='Blower-Pump-1')
 
+        print(raw_df_15m.head())
+
         # produce raw data
         #self.producer.main(topic='raw-data', df=raw_df_1m)
         self.producer.main(topic='raw-data-15m', df=raw_df_15m)
@@ -93,10 +95,15 @@ class RunPipeline:
         t.sleep(60)  # wait for druid to consume the raw data from kafka topics
         #df_1m = self.druid_fetcher.main(topic='raw-data')
         df_15m = self.druid_fetcher.main(topic='raw-data-15m')
+        
+        print(df_15m.head())
 
         # pre-process data
         #processed_df_1m = self.preprocesser.main(df=df_1m)
         processed_df_15m = self.preprocesser.main(df=df_15m)
+
+        print(processed_df_15m.head())
+
         # produce processed data
         #self.producer.main(topic='processed-data', df=processed_df_1m)
         self.producer.main(topic='processed-data-15m', df=processed_df_15m)
@@ -105,6 +112,8 @@ class RunPipeline:
         t.sleep(60)  # wait for druid to consume the processed data from kafka topics
         #df_1m = self.druid_fetcher.main(topic='processed-data')
         df_15m = self.druid_fetcher.main(topic='processed-data-15m')
+
+        print(df_15m.head())
 
         # run lstm model
         #results_1m, predicted_data_1m = self.lstm_model.main(load_best_model=True, df=df_1m, input_days=14, output_days=2, interval_minute=1)

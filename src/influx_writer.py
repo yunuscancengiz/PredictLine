@@ -28,11 +28,13 @@ class InfluxWriter:
         try:
             if '__time' in data.columns:
                 data.rename(columns={'__time': 'time'}, inplace=True)
+
+            self.bucket = bucket
+            print(f'Bucket: {self.influx_bucket}')
+            print(data)
             
             data['time'] = datetime.fromisoformat(data['time'])
             nanosecond_timestamp = int(data['time'].astimezone(UTC).timestamp() * 1e9)
-            self.bucket = bucket
-            print(f'Bucket: {self.influx_bucket}')
             if self.bucket == 'predicted-data' or self.bucket == 'predicted-data-15m':
                 point = (
                     Point(measurement_name='prediction')
