@@ -21,7 +21,6 @@ class DataPreprocessor:
             self.df = df
             self.process()
             self.logger.info('Data pre-processed successfully!')
-            print(self.df.head())
             return self.df
         except Exception as e:
             self.logger.error(msg='Exception happened while pre-processing the data!')

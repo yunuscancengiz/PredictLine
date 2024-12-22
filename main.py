@@ -75,7 +75,7 @@ class RunPipeline:
 
 
     def pipeline(self):
-        # calculate starting and ending dates
+        """# calculate starting and ending dates
         #self.starting_date_1m = str((datetime.now() - timedelta(days=14)).isoformat()).split('T')[0] + 'T00:00:00Z'
         #self.ending_date_1m = str((datetime.now() - timedelta(days=1)).isoformat()).split('T')[0] + 'T23:59:00Z'
         self.starting_date_15m = str((datetime.now() - timedelta(days=90)).isoformat()).split('T')[0] + 'T00:00:00Z'
@@ -103,9 +103,15 @@ class RunPipeline:
         self.producer.main(topic='processed-data-15m', df=processed_df_15m)
 
         # fetch processed data from druid
-        t.sleep(60)  # wait for druid to consume the processed data from kafka topics
+        t.sleep(60)"""  # wait for druid to consume the processed data from kafka topics
         #df_1m = self.druid_fetcher.main(topic='processed-data')
         df_15m = self.druid_fetcher.main(topic='processed-data-15m')
+
+        print('\n--------------------------------\n')
+        print(df_15m.head())
+        print(df_15m.info())
+        print(df_15m.value_counts('is_running'))
+        print('\n--------------------------------\n')
 
         # run lstm model
         #results_1m, predicted_data_1m = self.lstm_model.main(load_best_model=True, df=df_1m, input_days=14, output_days=2, interval_minute=1)
