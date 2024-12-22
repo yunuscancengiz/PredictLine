@@ -33,8 +33,8 @@ class InfluxWriter:
             print(f'Bucket: {self.bucket}')
             print(data)
             
-            data['__time'] = datetime.fromisoformat(data['__time'])
-            nanosecond_timestamp = int(data['__time'].astimezone(UTC).timestamp() * 1e9)
+            data['time'] = datetime.fromisoformat(data['time'])
+            nanosecond_timestamp = int(data['time'].astimezone(UTC).timestamp() * 1e9)
             if self.bucket == 'predicted-data' or self.bucket == 'predicted-data-15m':
                 point = (
                     Point(measurement_name='prediction')
