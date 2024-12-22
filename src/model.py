@@ -58,8 +58,9 @@ class RNNModel:
         self.model_directory_path = os.path.join(os.getcwd(), 'models', f'{interval_minute}m')
         if not os.path.exists(self.model_directory_path):
             os.makedirs(self.model_directory_path)
-        self.manage_model(job='select')     # select model, make predictions, save best model
+        results, predictions = self.manage_model(job='select')     # select model, make predictions, save best model
         self.manage_model(job='delete')     # delete old models if len(model_files) > 5
+        return results, predictions
 
 
     def load_existing_model_and_predict(self, model_name:str):
