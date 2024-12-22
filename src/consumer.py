@@ -21,14 +21,11 @@ class SimpleConsumer:
         self.influx_bucket = None
         self.influx_db_client = InfluxWriter(token=self.TOKEN, url=self.INFLUX_URL, organization=self.INFLUX_ORG)
 
-        # create consumer config
         self.consumer_config = {
             'bootstrap.servers': f'{self.SERVER_IP}:9092',
             'group.id': 'my-group',
             'auto.offset.reset': 'earliest'
         }
-
-        # create consumer object using config dict
         self.consumer = Consumer(self.consumer_config)
 
 
@@ -62,7 +59,7 @@ class SimpleConsumer:
                         self.logger.error(msg=f'Error: {msg.error()}')
                         break
                 msg = self.deserialize_data(data=msg.value())
-                self.logger.info(msg=f'Consumed message: {msg}')
+                #self.logger.info(msg=f'Consumed message: {msg}')
                 self.influx_db_client.write_into_influxdb(bucket=self.influx_bucket, data=msg)
                 
             except KeyboardInterrupt:

@@ -65,6 +65,7 @@ class RunPipeline:
 
 
     def start_consumers(self):
+        print('\n\nConsumers will be started')
         topics = ['processed-data', 'processed-data-15m', 'predicted-data', 'predicted-data-15m']
         for topic in topics:
             consumer = SimpleConsumer()
@@ -72,6 +73,7 @@ class RunPipeline:
             thread.daemon = True
             self.consumers.append(thread)
             thread.start()
+        print('\n\nConsumers started\n\n')
 
 
     def pipeline(self):
