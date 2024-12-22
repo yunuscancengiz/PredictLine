@@ -243,7 +243,6 @@ class RNNModel:
                 'time': timestamps,
                 'PredictedAxialAxisRmsVibration': predictions
             })
-            print(f'\n------------------------\npredicted-data:\n{timestamped_data}')
         except Exception as e:
             self.logger.error(msg='Exception happened while adding time column to the predicted values!')
             self.logger.error(msg=traceback.format_exc())
