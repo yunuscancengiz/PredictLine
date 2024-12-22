@@ -55,7 +55,7 @@ class RNNModel:
         self.input_steps = int((input_days - output_days) * 24 * (60 / interval_minute))
         self.output_steps = int(output_days * 24 * (60 / interval_minute))
 
-        self.model_directory_path = os.path.join(os.getcwd(), '..', 'models', f'{interval_minute}m')
+        self.model_directory_path = os.path.join(os.getcwd(), 'models', f'{interval_minute}m')
         if not os.path.exists(self.model_directory_path):
             os.makedirs(self.model_directory_path)
         self.manage_model(job='select')     # select model, make predictions, save best model

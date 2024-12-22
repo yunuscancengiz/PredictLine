@@ -32,6 +32,7 @@ class InfluxWriter:
             self.bucket = bucket
             print(f'Bucket: {self.bucket}')
             print(data)
+            print(data['time'])
             
             data['time'] = datetime.fromisoformat(data['time'])
             nanosecond_timestamp = int(data['time'].astimezone(UTC).timestamp() * 1e9)
