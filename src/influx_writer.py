@@ -34,6 +34,8 @@ class InfluxWriter:
             print(data)
             print(data['time'])
             
+            #data['time'] = datetime.fromisoformat(data['time'])
+            data['time'] = datetime.strptime(data['time'], '%Y-%m-%dT%H:%M:%SZ')
             data['time'] = datetime.fromisoformat(data['time'])
             nanosecond_timestamp = int(data['time'].astimezone(UTC).timestamp() * 1e9)
             if self.bucket == 'predicted-data' or self.bucket == 'predicted-data-15m':
