@@ -26,11 +26,7 @@ class InfluxWriter:
 
     def write_into_influxdb(self, bucket:str, data:dict):
         try:
-            self.bucket = bucket
-            print(f'Bucket: {self.bucket}')
-            print(data)
-            print(str(data['time']).rstrip('Z'))
-            
+            self.bucket = bucket       
             data['time'] = datetime.fromisoformat(str(data['time']).rstrip('Z'))
             nanosecond_timestamp = int(data['time'].astimezone(UTC).timestamp() * 1e9)
             if self.bucket == 'predicted-data' or self.bucket == 'predicted-data-15m':
