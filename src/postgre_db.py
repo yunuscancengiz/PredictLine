@@ -11,8 +11,8 @@ class PostgreClient:
     load_dotenv()
     POSTGRE_USERNAME = os.getenv('POSTGRE_USERNAME')
     POSTGRE_PASSWORD = os.getenv('POSTGRE_PASSWORD')
-    #POSTGRE_HOST = os.getenv('POSTGRE_HOST')
-    POSTGRE_HOST = 'localhost'  # @TODO: delete this line and command-out the above one
+    POSTGRE_HOST = os.getenv('POSTGRE_HOST')
+    #POSTGRE_HOST = 'localhost'  # @TODO: delete this line and command-out the above one
     POSTGRE_PORT = os.getenv('POSTGRE_PORT')
     POSTGRE_DB_NAME = os.getenv('POSTGRE_DB_NAME')
 
