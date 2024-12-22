@@ -30,7 +30,7 @@ class InfluxWriter:
             #    data.rename(columns={'__time': 'time'}, inplace=True)
 
             self.bucket = bucket
-            print(f'Bucket: {self.influx_bucket}')
+            print(f'Bucket: {self.bucket}')
             print(data)
             
             data['__time'] = datetime.fromisoformat(data['__time'])
