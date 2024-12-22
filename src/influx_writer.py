@@ -37,7 +37,7 @@ class InfluxWriter:
                     .field('PredictedAxialAxisRmsVibration', float(data['PredictedAxialAxisRmsVibration']))
                 )
             else:
-                data['is_running'] = data['is_running'].astype(int)
+                data['is_running'] = int(data['is_running'])
                 point = (
                     Point(measurement_name='sensor_data')
                     .time(nanosecond_timestamp, WritePrecision.NS)
