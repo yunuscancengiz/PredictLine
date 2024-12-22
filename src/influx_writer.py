@@ -26,9 +26,6 @@ class InfluxWriter:
 
     def write_into_influxdb(self, bucket:str, data:dict):
         try:
-            #if '__time' in data.columns:
-            #    data.rename(columns={'__time': 'time'}, inplace=True)
-
             self.bucket = bucket
             print(f'Bucket: {self.bucket}')
             print(data)
