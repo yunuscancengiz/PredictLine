@@ -26,15 +26,15 @@ class InfluxWriter:
 
     def write_into_influxdb(self, bucket:str, data:dict):
         try:
-            if '__time' in data.columns:
-                data.rename(columns={'__time': 'time'}, inplace=True)
+            #if '__time' in data.columns:
+            #    data.rename(columns={'__time': 'time'}, inplace=True)
 
             self.bucket = bucket
             print(f'Bucket: {self.influx_bucket}')
             print(data)
             
-            data['time'] = datetime.fromisoformat(data['time'])
-            nanosecond_timestamp = int(data['time'].astimezone(UTC).timestamp() * 1e9)
+            data['__time'] = datetime.fromisoformat(data['__time'])
+            nanosecond_timestamp = int(data['__time'].astimezone(UTC).timestamp() * 1e9)
             if self.bucket == 'predicted-data' or self.bucket == 'predicted-data-15m':
                 point = (
                     Point(measurement_name='prediction')
@@ -59,9 +59,8 @@ class InfluxWriter:
             self.write_api.write(bucket=self.bucket, org=self.organization, record=point, write_precision=WritePrecision.NS)
             #self.logger.info(msg=f'Data uploaded successfully into {self.bucket} named Influx DB bucket.')
         except Exception as e:
-            pass
-            #self.logger.error(msg=f'Exception happened while writing into {self.bucket} named Influx DB bucket!')
-            #self.logger.error(msg=traceback.format_exc())
+            self.logger.error(msg=f'Exception happened while writing into {self.bucket} named Influx DB bucket!')
+            self.logger.error(msg=traceback.format_exc())
 
 
     def close_connection(self):
