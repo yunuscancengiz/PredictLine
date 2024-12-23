@@ -25,7 +25,7 @@ class DruidDataFetcher:
             self.topic = topic
 
             data = self.fetch()
-            df = self.convert_into_df(data=data)
+            df = self.convert_to_df(data=data)
             return df
         except Exception as e:
             self.logger.error(msg=f'Exception happened while fetching data from {self.topic} named table!')
@@ -45,12 +45,12 @@ class DruidDataFetcher:
             self.logger.warning(msg=f'Exception happened while fetching data from {self.topic} named table. That might cause an error.')
 
 
-    def convert_into_df(self, data:list):
+    def convert_to_df(self, data:list):
         df = pd.DataFrame(data=data)
         columns_to_drop = ['kafka.timestamp', 'kafka.key', 'kafka.topic']
         existing_columns_to_drop = [col for col in columns_to_drop if col in df.columns]
         df = df.drop(existing_columns_to_drop, axis=1)
-        self.logger.info(msg='Data converted into a dataframe...')
+        self.logger.info(msg='Data converted to a dataframe...')
         return df
 
 

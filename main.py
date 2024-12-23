@@ -28,9 +28,9 @@ class RunPipeline:
         self.postgre_client.create_table(table_name='model_results_1m')
         self.postgre_client.create_table(table_name='model_results_15m')
 
-        self.starting_date = None
-        self.ending_date = None
         self.consumers = []
+        self.starting_date_1m = None
+        self.starting_date_15m = None
 
         # @ TODO: comment out starting hour and minute
         #self.starting_hour = 0
@@ -76,54 +76,55 @@ class RunPipeline:
 
     def pipeline(self):
         # calculate starting and ending dates
-        #self.starting_date_1m = str((datetime.now() - timedelta(days=14)).isoformat()).split('T')[0] + 'T00:00:00Z'
-        #self.ending_date_1m = str((datetime.now() - timedelta(days=1)).isoformat()).split('T')[0] + 'T23:59:00Z'
-        self.starting_date_15m = str((datetime.now() - timedelta(days=90)).isoformat()).split('T')[0] + 'T00:00:00Z'
-        self.ending_date_15m = str((datetime.now() - timedelta(days=1)).isoformat()).split('T')[0] + 'T23:45:00Z'
+        if self.starting_date_1m is None and self.starting_date_15m is None:
+            self.starting_date_1m = str((datetime.now() - timedelta(days=14)).isoformat()).split('T')[0] + 'T00:00:00Z'
+            self.starting_date_15m = str((datetime.now() - timedelta(days=90)).isoformat()).split('T')[0] + 'T00:00:00Z'
+        
+        self.ending_date_15m = str((datetime.now() - timedelta(days=1)).isoformat()).split('T')[0] + 'T00:00:00Z'
+        self.ending_date_1m = str((datetime.now() - timedelta(days=1)).isoformat()).split('T')[0] + 'T00:00:00Z'
 
         # create dataset
-        #raw_df_1m = self.dataset_creator.main(start=self.starting_date_1m, stop=self.ending_date_1m, line='L301', timeframe='1m', machine='Blower-Pump-1')
+        raw_df_1m = self.dataset_creator.main(start=self.starting_date_1m, stop=self.ending_date_1m, line='L301', timeframe='1m', machine='Blower-Pump-1')
         raw_df_15m = self.dataset_creator.main(start=self.starting_date_15m, stop=self.ending_date_15m, line='L301', timeframe='15m', machine='Blower-Pump-1')
 
         # produce raw data
-        #self.producer.main(topic='raw-data', df=raw_df_1m)
+        self.producer.main(topic='raw-data', df=raw_df_1m)
         self.producer.main(topic='raw-data-15m', df=raw_df_15m)
 
         # fetch raw data from druid
-        t.sleep(60)  # wait for druid to consume the raw data from kafka topics
-        #df_1m = self.druid_fetcher.main(topic='raw-data')
+        t.sleep(30)  # wait for druid to consume the raw data from kafka topics
+        df_1m = self.druid_fetcher.main(topic='raw-data')
         df_15m = self.druid_fetcher.main(topic='raw-data-15m')
 
         # pre-process data
-        #processed_df_1m = self.preprocesser.main(df=df_1m)
+        processed_df_1m = self.preprocesser.main(df=df_1m)
         processed_df_15m = self.preprocesser.main(df=df_15m)
 
         # produce processed data
-        #self.producer.main(topic='processed-data', df=processed_df_1m)
+        self.producer.main(topic='processed-data', df=processed_df_1m)
         self.producer.main(topic='processed-data-15m', df=processed_df_15m)
 
         # fetch processed data from druid
-        t.sleep(60)  # wait for druid to consume the processed data from kafka topics
-        #df_1m = self.druid_fetcher.main(topic='processed-data')
+        t.sleep(30)  # wait for druid to consume the processed data from kafka topics
+        df_1m = self.druid_fetcher.main(topic='processed-data')
         df_15m = self.druid_fetcher.main(topic='processed-data-15m')
 
-        print('\n--------------------------------\n')
-        print(df_15m.head())
-        print(df_15m.info())
-        print(df_15m.value_counts('is_running'))
-        print('\n--------------------------------\n')
-
         # run lstm model
-        #results_1m, predicted_data_1m = self.lstm_model.main(load_best_model=True, df=df_1m, input_days=14, output_days=2, interval_minute=1)
+        results_1m, predicted_data_1m = self.lstm_model.main(load_best_model=True, df=df_1m, input_days=14, output_days=2, interval_minute=1)
         results_15m, predicted_data_15m = self.lstm_model.main(load_best_model=False, df=df_15m, input_days=90, output_days=10, interval_minute=15)
 
         # produce predicted data and insert model results into postgre db
-        #if results_1m is not None and predicted_data_1m is not None:
-            #self.producer.main(topic='predicted-data', df=predicted_data_1m)
-            #self.postgre_client.insert_data(table_name='model_results_1m', results=results_1m)
+        if results_1m is not None and predicted_data_1m is not None:
+            self.producer.main(topic='predicted-data', df=predicted_data_1m)
+            self.postgre_client.insert_data(table_name='model_results_1m', results=results_1m)
+
         if results_15m is not None and predicted_data_15m is not None:
             self.producer.main(topic='predicted-data-15m', df=predicted_data_15m)
-            self.postgre_client.insert_data(table_name='model_results_15m', results=results_15m)       
+            self.postgre_client.insert_data(table_name='model_results_15m', results=results_15m)
+
+        # update starting dates as dataframes' last rows
+        self.starting_date_1m = raw_df_1m['time'].iloc[-1]
+        self.starting_date_15m = raw_df_15m['time'].iloc[-1]
 
 
 if __name__ == '__main__':

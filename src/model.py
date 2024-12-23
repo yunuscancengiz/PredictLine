@@ -29,7 +29,7 @@ class RNNModel:
     }
     input_columns = ['axialAxisRmsVibration', 'radialAxisKurtosis', 'radialAxisPeakAcceleration', 'radialAxisRmsAcceleration', 'radialAxisRmsVibration', 'temperature', 'is_running']
     target_column = 'axialAxisRmsVibration'
-    EPOCHS = 3
+    EPOCHS = 10
 
     def __init__(self):
         self.df = None
@@ -51,7 +51,6 @@ class RNNModel:
         self.model_name = model_name
         self.load_best_model = load_best_model
 
-        # delete below if unnecessary
         self.input_steps = int((input_days - output_days) * 24 * (60 / interval_minute))
         self.output_steps = int(output_days * 24 * (60 / interval_minute))
 
@@ -200,7 +199,6 @@ class RNNModel:
         lstm_model.add(Dense(1, 'linear'))
         lstm_model.summary()
 
-        # @TODO:patience argument will be updated as 10
         early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
         self.model_name = f'model_{int(time.time())}_{self.interval_minute}m.keras'
         checkpoint = ModelCheckpoint(f'{self.model_directory_path}/{self.model_name}', save_best_only=True)
@@ -319,10 +317,3 @@ class RNNModel:
                 for f in files_to_remove:
                     os.remove(os.path.join(self.model_directory_path, f))
                 self.logger.info(msg=f'Old models deleted! Deleted models: \n{files_to_remove}')
-
-
-
-if __name__ == '__main__':
-    df_15m = pd.read_csv('dataset/1724929644/dataset-90d.csv')[4::15]
-    model = RNNModel()
-    model.main(df=df_15m, input_days=90, output_days=10, interval_minute=15)

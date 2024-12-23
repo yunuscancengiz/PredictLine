@@ -87,8 +87,3 @@ class SimpleProducer:
         self.logger.info(msg=f'Messages successfully produced to the {topic} named topic!')
         self.producer.flush()
         time.sleep(3)
-
-
-if __name__ == '__main__':
-    simple_producer = SimpleProducer()
-    simple_producer.main(topic='raw-data')

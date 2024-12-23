@@ -8,6 +8,7 @@ import time
 from pytz import timezone, UTC
 from datetime import datetime
 
+
 class InfluxWriter:
     load_dotenv()
     TOKEN = os.getenv('MY_INFLUX_TOKEN')

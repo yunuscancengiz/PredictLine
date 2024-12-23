@@ -67,8 +67,3 @@ class PrepareInitialData:
 
     def process_data(self, df:pd.DataFrame):
         return self.preprocessor.main(df=df)
-
-
-if __name__ == '__main__':
-    data_initializer = PrepareInitialData()
-    data_initializer.main()

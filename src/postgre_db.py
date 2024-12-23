@@ -12,7 +12,6 @@ class PostgreClient:
     POSTGRE_USERNAME = os.getenv('POSTGRE_USERNAME')
     POSTGRE_PASSWORD = os.getenv('POSTGRE_PASSWORD')
     POSTGRE_HOST = os.getenv('POSTGRE_HOST')
-    #POSTGRE_HOST = 'localhost'  # @TODO: delete this line and command-out the above one
     POSTGRE_PORT = os.getenv('POSTGRE_PORT')
     POSTGRE_DB_NAME = os.getenv('POSTGRE_DB_NAME')
 
@@ -45,7 +44,6 @@ class PostgreClient:
                 );
             '''
             
-            # self.db_client.commit()
             with self.db_client:
                 self.cursor.execute(query=query)
                 self.logger.info(msg=f'{table_name} named table already exists or created successfully.')
@@ -109,7 +107,3 @@ class PostgreClient:
         except Exception as e:
             self.logger.error(msg=f'Exception happened while deleting the data, Error: {e}')
             self.logger.error(msg=traceback.format_exc())
-
-
-if __name__ == '__main__':
-    postgre_client = PostgreClient()

@@ -12,7 +12,6 @@ class SimpleConsumer:
     TOKEN = os.getenv('MY_INFLUX_TOKEN')
     INFLUX_URL = os.getenv('MY_INFLUX_URL')
     INFLUX_ORG = os.getenv('MY_INFLUX_ORG')
-
     SERVER_IP = os.getenv('GCP_IP')
     logger = ProjectLogger(class_name='SimpleConsumer').create_logger()
 
@@ -67,8 +66,3 @@ class SimpleConsumer:
             except Exception as e:
                 self.logger.error(msg=f'Exception happened when consuming messages, error: {e}')
                 self.logger.error(traceback.format_exc())
-
-
-if __name__ == '__main__':
-    simple_consumer = SimpleConsumer(influx_bucket='test')
-    simple_consumer.main(topics=['raw-data', 'raw-data-15m', 'predicted-data', 'predicted-data-15m'])

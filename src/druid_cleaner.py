@@ -43,8 +43,3 @@ class DruidCleaner:
             self.logger.info(msg='Old data deletion initiated successfully.')
         else:
             self.logger.warning(msg=f'Failed to initiate data deletion. Status code: {response.status_code}, Response: {response.text}')
-
-
-if __name__ == '__main__':
-    druid_cleaner = DruidCleaner(datasource='raw-data')
-    druid_cleaner.main()
