@@ -32,12 +32,8 @@ class RunPipeline:
         self.starting_date_1m = None
         self.starting_date_15m = None
 
-        # @ TODO: comment out starting hour and minute
-        #self.starting_hour = 0
-        #self.starting_minute = 0
-        now = datetime.now()
-        self.starting_hour = now.hour
-        self.starting_minute = now.minute
+        self.starting_hour = 0
+        self.starting_minute = 0
 
 
     def run(self):
