@@ -10,7 +10,7 @@ This repository contains a predictive maintenance pipeline built to process sens
 
 The architecture is modular, incorporating several tools and technologies to ensure data flow and processing is efficient and reliable:
 
-![Project Architecture](Final%20Dark%20Flow%20Chart.jpg)
+![Project Architecture](Flowcharts/Final%20Dark%20Flow%20Chart.jpg)
 
 - **Data Sources:** Sensor data from InfluxDB.
 - **Data Preprocessing:** Data cleaning and transformation in Apache Druid.
