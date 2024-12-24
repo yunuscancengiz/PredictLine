@@ -3,9 +3,11 @@ import pandas as pd
 import os
 from dotenv import load_dotenv
 import time
+from src._logger import ProjectLogger
 
 
 class DatasetCreator:
+    logger = ProjectLogger(class_name='DatasetCreator').create_logger()
     load_dotenv()
     BUCKET = os.getenv('INFLUX_BUCKET')
     ORG = os.getenv('INFLUX_ORG')
@@ -35,6 +37,7 @@ class DatasetCreator:
         )
 
         self.query_api = self.client.query_api()
+        self.logger.info(msg='InfluxDB Query API created successfully!')
 
     def main(self, start:str, stop:str, line:str, timeframe:str, machine:str):
         self.start = start
@@ -74,6 +77,7 @@ class DatasetCreator:
                 }
             )
         self.df = pd.DataFrame(list_for_df)
+        self.logger.info(msg=f'Data fetched successfully from InfluxDB, interval: {self.timeframe}')
 
 
     def create_dataframe(self):
@@ -84,6 +88,7 @@ class DatasetCreator:
             else:
                 data[col] = self.df.loc[self.df['field'] == col]['value'].reset_index(drop=True)
         self.df = pd.DataFrame(data)
+        self.logger.info(msg=f'Data converted to dataframe, interval: {self.timeframe}. Shape: {self.df.shape}')
         return self.df
 
 
