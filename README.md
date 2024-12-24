@@ -12,6 +12,16 @@ The architecture is modular, incorporating several tools and technologies to ens
 
 ![Project Architecture](Flowcharts/Final%20Dark%20Flow%20Chart.jpg)
 
+---
+
+## **Grafana Dashboard Example**
+
+The final results are visualized with Grafana as follows.
+
+![Grafana Dashboard Example](Flowcharts/dashboard_example.PNG)
+
+---
+
 - **Data Sources:** Sensor data from InfluxDB.
 - **Data Preprocessing:** Data cleaning and transformation in Apache Druid.
 - **Kafka Topics:** Raw, processed, and predicted data managed through Apache Kafka.
