@@ -1,4 +1,4 @@
-# PredictionFromSensorData
+# PredictLine
 
 **Predictive Maintenance with Sensor Data**
 
@@ -53,8 +53,8 @@ sudo docker run hello-world
 
 ### **2. Clone the Repository**
 ```bash
-git clone https://github.com/yunuscancengiz/PredictionFromSensorData.git
-cd PredictionFromSensorData
+git clone https://github.com/yunuscancengiz/PredictLine.git
+cd PredictLine
 ```
 
 ---
@@ -112,7 +112,7 @@ Configure Apache Druid to consume data from the Kafka topics using the Druid UI.
 Build the Docker image for the main application and run it:
 ```bash
 sudo docker build -t predictive-maintenance-app .
-sudo docker run -d --rm --name app --network predictionfromsensordata_pm_pipeline_network predictive-maintenance-app
+sudo docker run -d --rm --name app --network predictline_pm_pipeline_network predictive-maintenance-app
 ```
 
 ---
