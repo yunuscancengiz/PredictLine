@@ -67,27 +67,29 @@ nano .env
 Populate the `.env` file with the necessary configuration values as required by the project.
 Necessary values:
 
-(Server IP)
+```bash
+# Server IP
 GCP_IP=
 
-(Corp. Influx Configuration)
+# Corp. Influx Configuration
 INFLUX_BUCKET=
 INFLUX_ORG=
 INFLUX_TOKEN=
 INFLUX_URL=
 
-(Personal Influx Configuration)
+# Personal Influx Configuration
 MY_INFLUX_BUCKET=
 MY_INFLUX_ORG=
 MY_INFLUX_TOKEN=
 MY_INFLUX_URL=
 
-(PostgreSQL Configuration)
+# PostgreSQL Configuration
 POSTGRE_USERNAME=
 POSTGRE_PASSWORD=
 POSTGRE_HOST=
 POSTGRE_PORT=
 POSTGRE_DB_NAME=
+```
 
 ---
 
